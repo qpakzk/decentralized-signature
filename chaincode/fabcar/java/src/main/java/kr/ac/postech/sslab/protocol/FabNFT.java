@@ -12,15 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import kr.ac.postech.sslab.protocol.Token;
+
 public class FabNFT extends ChaincodeBase {
 
 	long tokensCount;
+	String tokenType;
 	Map<String, String> tokenOwner;
 	Map<String, String> tokenApprovals;
 	Map<String, Long> ownedTokensCount;
 
 	public FabNFT () {
 		tokensCount = 0;
+		tokenType = null;
 		tokenOwner = new HashMap<String, String>();
 		tokenApprovals = new HashMap<String, String>();
 		ownedTokensCount = new HashMap<String, Long>();
@@ -92,6 +96,10 @@ public class FabNFT extends ChaincodeBase {
 	    }
 	}
 
+	String _ownerOf(String tokenId) {
+		return tokenOwner.get(tokenId);
+	}
+
 	public Response safeTransferFrom(ChaincodeStub stub, List <String>args) {
 
 		try {
@@ -104,12 +112,57 @@ public class FabNFT extends ChaincodeBase {
     public Response transferFrom(ChaincodeStub stub, List<String> args) {
 		
 		try {
+			//parameter
+			String from = args.get(0);
+			String to = args.get(1);
+			String tokenId = args.get(2);
+			
+			if (_ownerOf(tokenId) == null) {
+				_mint(to, tokenId);
+				writeTransfer(stub, null, to, tokenId);
+			}
+			if (_ownerOf(tokenId).equals(from)) {
+				_transferFrom(from, to, tokenId);
+				writeTransfer(stub, from, to, tokenId);
+			}
+
 			return newSuccessResponse("Succeeded 'transferFrom' function");
 		} catch (Throwable e) {
 			return newErrorResponse("Failed 'transferFrom' function");
 		}
-    }
+	}
+	
+	void _mint(String to, String tokenId) {
+		
+		tokensCount += 1;
+		tokenOwner.put(tokenId, to);
+		ownedTokensCount.put(to, new Long(1));
+	}
 
+	void _transferFrom(String from, String to, String tokenId) {
+		
+		tokenOwner.put(tokenId, to);
+
+		long fromOwnedTokensCount;
+
+		fromOwnedTokensCount = ownedTokensCount.get(from);
+		fromOwnedTokensCount -= 1;
+		ownedTokensCount.put(from, fromOwnedTokensCount);
+
+		long toOwnedTokensCount;
+
+		toOwnedTokensCount = ownedTokensCount.get(to);
+		toOwnedTokensCount += 1;
+		ownedTokensCount.put(to, toOwnedTokensCount);
+	}
+
+	void writeTransfer(ChaincodeStub stub, String from, String to, String tokenId) {
+
+		Token token = new Token(tokenId, tokenType);
+		JSONObject jsonObject = token.writeTransfer(from, to, tokenId);
+		stub.putStringState(tokenId, jsonObject.toString());
+	}
+	
     public Response approve(ChaincodeStub stub, List<String> args) {
 
 	    try {
