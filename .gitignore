@@ -40,6 +40,10 @@ hs_err_pid*
 # installed platform-specific binaries
 /bin
 .project
+.classpath
+.settings
+
+main.iml
 
 build
 .gradle
