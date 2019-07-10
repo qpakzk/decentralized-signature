@@ -30,6 +30,6 @@ shadowJar {
     classifier = null
 
     manifest {
-        attributes 'Main-Class': 'kr.ac.postech.sslab.protocol.SimpleAsset'
+        attributes 'Main-Class': 'kr.ac.postech.sslab.protocol.FabNFT'
     }
 }

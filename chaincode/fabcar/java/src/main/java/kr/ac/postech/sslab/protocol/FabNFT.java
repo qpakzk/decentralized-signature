@@ -1,4 +1,4 @@
-package org.hyperledger.fabric.example;
+package kr.ac.postech.sslab.protocol;
 
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * SimpleAsset implements a simple chaincode to manage an asset
+ * FabNFT implements a simple chaincode to manage an asset
  */
-public class SimpleAsset extends ChaincodeBase {
+public class FabNFT extends ChaincodeBase {
 
     int numberOfToken = 0;
 
