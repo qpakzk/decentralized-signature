@@ -7,10 +7,12 @@ import org.json.simple.parser.JSONParser;
 public class StandardToken {
     private String tokenId;
     private String owner;
+    private String operator;
 
     public StandardToken(String tokenId, String owner) {
         this.tokenId = tokenId;
         this.owner = owner;
+        this.operator = null;
     }
 
     public String getTokenId() {
@@ -23,6 +25,14 @@ public class StandardToken {
 
     public String getOwner() {
         return this.owner;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public String getOperator() {
+        return this.operator;
     }
 
     public JSONObject constructTokenJSONObject() {
@@ -48,5 +58,5 @@ public class StandardToken {
             e.printStackTrace(System.out);
             return null;
         }
-    }    
+    }
 }
