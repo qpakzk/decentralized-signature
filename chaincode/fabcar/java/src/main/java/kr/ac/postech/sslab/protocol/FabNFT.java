@@ -2,22 +2,16 @@ package kr.ac.postech.sslab.protocol;
 
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.KeyValue;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
-public class FabNFT extends ChaincodeBase {
+public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 
 	long tokensCount;
 
 	public FabNFT () {
-		tokensCount = 0;
+		this.tokensCount = 0;
 	}
 
     @Override
@@ -40,6 +34,9 @@ public class FabNFT extends ChaincodeBase {
 			if (func.equals("ownerOf")) {
 				return ownerOf(stub, args);
 			}
+			else if(func.equals("transferFrom")) {
+				return transferFrom(stub, args);
+			}
 
 			return newErrorResponse("Invalid invoke function name.");
 		} catch (Throwable e) {
@@ -47,6 +44,7 @@ public class FabNFT extends ChaincodeBase {
 		}
 	}
 
+	@Override
 	public Response ownerOf(ChaincodeStub stub, List<String> args) {
 	    try {
 			//parameter
@@ -61,7 +59,7 @@ public class FabNFT extends ChaincodeBase {
 
 		    return newSuccessResponse(owner.getBytes("utf-8"));
 	    } catch (Throwable e) {
-			e.printStackTrace(System.out);
+			e.printStackTrace();
 		    return newErrorResponse("-1");
 	    }
 	}
@@ -75,8 +73,55 @@ public class FabNFT extends ChaincodeBase {
 
 			return String.valueOf(jsonObject.get("owner"));
 		} catch (Throwable e) {
-			e.printStackTrace(System.out);
+			e.printStackTrace();
 			return null;
+		}
+	}
+
+	@Override
+	public Response transferFrom(ChaincodeStub stub, List<String> args) {
+		try {
+			//parameter
+			String from = args.get(0);
+			String to = args.get(1);
+			String tokenId = args.get(2);
+			
+			StandardToken token;
+			JSONObject tokenJsonObject;
+
+			if(from.equals("") == true) {
+				token = new StandardToken(String.valueOf(this.tokensCount), to);
+				tokenJsonObject = token.constructTokenJSONObject();
+
+				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
+
+				this.tokensCount += 1;
+				return newSuccessResponse(token.getTokenId());
+			}
+			else {
+				if(tokenId.equals("") == true) {
+					return newErrorResponse("-1");
+				}
+
+				String stringState = stub.getStringState(tokenId);
+				if(stringState == null) {
+					return newErrorResponse("-1");
+				}
+
+				token = StandardToken.retrieveToken(stringState);
+				
+				if(token.getOwner().equals(from) == false) {
+					return newErrorResponse("-1");
+				}
+
+				token.setOwner(to);
+				tokenJsonObject = token.constructTokenJSONObject();
+				
+				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
+				return newSuccessResponse(tokenJsonObject.toString());
+			}
+		} catch(Throwable e) {
+			return newErrorResponse("-1");
 		}
 	}
 
