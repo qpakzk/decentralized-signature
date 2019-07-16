@@ -7,4 +7,5 @@ import java.util.List;
 public interface StandardFabNFT {
     public Response ownerOf(ChaincodeStub stub, List<String> args);
     public Response transferFrom(ChaincodeStub stub, List<String> args);
+    public Response approve(ChaincodeStub stub, List<String> args);
 }

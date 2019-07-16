@@ -12,7 +12,7 @@ public class StandardToken {
     public StandardToken(String tokenId, String owner) {
         this.tokenId = tokenId;
         this.owner = owner;
-        this.operator = null;
+        this.operator = "";
     }
 
     public String getTokenId() {
@@ -39,6 +39,7 @@ public class StandardToken {
         HashMap<String, String> tokenMap = new HashMap<String, String>();
         tokenMap.put("tokenId", this.tokenId);
         tokenMap.put("owner", this.owner);
+        tokenMap.put("operator", this.operator);
 
         JSONObject jsonObject = new JSONObject(tokenMap);
         

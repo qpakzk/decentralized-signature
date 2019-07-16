@@ -37,6 +37,9 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 			else if(func.equals("transferFrom")) {
 				return transferFrom(stub, args);
 			}
+			else if (func.equals("approve")) {
+				return approve(stub, args);
+			}
 
 			return newErrorResponse("Invalid invoke function name.");
 		} catch (Throwable e) {
@@ -125,6 +128,30 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 		}
 	}
 
+	@Override
+	public Response approve(ChaincodeStub stub, List<String> args) {
+		try {
+			//parameter
+			String approved = args.get(0);
+			String tokenId = args.get(1);
+
+			String stringState = stub.getStringState(tokenId);
+				if(stringState == null) {
+					return newErrorResponse("-1");
+				}
+
+			StandardToken token = StandardToken.retrieveToken(stringState);
+
+			token.setOperator(approved);
+			JSONObject tokenJsonObject = token.constructTokenJSONObject();
+
+			stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
+			return newSuccessResponse(token.getOperator());
+		} catch (Throwable e) {
+			return newErrorResponse("-1");
+		}
+	}
+	
     public static void main(String[] args) {
         new FabNFT().start(args);
     }
