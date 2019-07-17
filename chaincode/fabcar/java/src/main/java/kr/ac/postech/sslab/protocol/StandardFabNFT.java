@@ -5,6 +5,7 @@ import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.List;
 
 public interface StandardFabNFT {
+    public Response balanceOf(ChaincodeStub stub, List<String> args);
     public Response ownerOf(ChaincodeStub stub, List<String> args);
     public Response transferFrom(ChaincodeStub stub, List<String> args);
     public Response approve(ChaincodeStub stub, List<String> args);

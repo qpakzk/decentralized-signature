@@ -2,6 +2,8 @@ package kr.ac.postech.sslab.protocol;
 
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
+import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.util.List;
@@ -31,7 +33,10 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
             String func = stub.getFunction();
 			List<String> args = stub.getParameters();
 			
-			if (func.equals("ownerOf")) {
+			if (func.equals("balanceOf")) {
+				return balanceOf(stub, args);
+			}
+			else if (func.equals("ownerOf")) {
 				return ownerOf(stub, args);
 			}
 			else if(func.equals("transferFrom")) {
@@ -47,6 +52,45 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 		}
 	}
 
+	@Override
+	public Response balanceOf(ChaincodeStub stub, List<String> args) {
+		try {
+			//parameter
+			String owner = args.get(0);
+			
+			String queryString = "{\"owner\":\"" + owner + "\"}";
+			
+			//return
+			String balance = getNumberOfTokensForQueryString(stub, queryString);
+
+			if(balance == null) {
+				return newErrorResponse("-1");
+			}
+
+		    return newSuccessResponse(balance);
+		} catch (Throwable e) {
+		    return newErrorResponse("-1");
+	    }
+	}
+
+	private String getNumberOfTokensForQueryString(ChaincodeStub stub, String queryString) {
+
+	    int numberOfTokens = 0;
+
+	    try {
+		    QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(queryString);
+		    while(resultsIterator.iterator().hasNext()) {
+			    resultsIterator.iterator().next().getStringValue();
+				numberOfTokens++;
+			}
+			
+			return String.valueOf(numberOfTokens);
+	    } catch (Throwable e) {
+		    return null;
+	    }
+    } 
+
+	
 	@Override
 	public Response ownerOf(ChaincodeStub stub, List<String> args) {
 	    try {
