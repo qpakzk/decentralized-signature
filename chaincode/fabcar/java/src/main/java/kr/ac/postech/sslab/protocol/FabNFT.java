@@ -42,16 +42,16 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 			List<String> args = stub.getParameters();
 			
 			if (func.equals("balanceOf")) {
-				return balanceOf(stub, args);
+				return this.balanceOf(stub, args);
 			}
 			else if (func.equals("ownerOf")) {
-				return ownerOf(stub, args);
+				return this.ownerOf(stub, args);
 			}
 			else if(func.equals("transferFrom")) {
-				return transferFrom(stub, args);
+				return this.transferFrom(stub, args);
 			}
 			else if (func.equals("approve")) {
-				return approve(stub, args);
+				return this.approve(stub, args);
 			}
 
 			return newErrorResponse("Invalid invoke function name.");
