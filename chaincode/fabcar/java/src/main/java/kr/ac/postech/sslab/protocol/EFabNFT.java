@@ -3,6 +3,8 @@ package kr.ac.postech.sslab.protocol;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.List;
 
+import kr.ac.postech.sslab.structure.TokenManager;
+
 public class EFabNFT extends FabNFT implements EFabNFTInterface {
     private String tokenType;
 
@@ -30,6 +32,9 @@ public class EFabNFT extends FabNFT implements EFabNFTInterface {
 			else if (func.equals("approve")) {
 				return super.approve(stub, args);
 			}
+			else if (func.equals("initialize")) {
+				return this.initialize(stub, args);
+			}
             else if (func.equals("divide")) {
 				return this.divide(stub, args);
 			}
@@ -49,6 +54,18 @@ public class EFabNFT extends FabNFT implements EFabNFTInterface {
 			return newErrorResponse("Invalid invoke function name.");
 		} catch (Throwable e) {
 			return newErrorResponse(e.getMessage());
+		}
+	}
+
+	@Override
+	public Response initialize(ChaincodeStub stub, List<String> args) {
+		try {
+			TokenManager tokenManager = new TokenManager(this.tokenType);
+			tokenManager.initialize(stub, super.getRecentCreatedTokenId());
+
+            return newSuccessResponse("Succeeded 'initialize' function");
+        } catch (Throwable e) {
+            return newErrorResponse("Failed 'initialize' function");
 		}
 	}
 

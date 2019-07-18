@@ -5,6 +5,7 @@ import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.List;
 
 public interface EFabNFTInterface {
+    public Response initialize(ChaincodeStub stub, List<String> args);
     public Response divide(ChaincodeStub stub, List<String> args);
     public Response delete(ChaincodeStub stub, List<String> args);
     public Response update(ChaincodeStub stub, List<String> args);

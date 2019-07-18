@@ -13,14 +13,20 @@ import kr.ac.postech.sslab.structure.Token;
 public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 
 	private long tokensCount;
+	private String tokenId;
 
 	public FabNFT () {
 		this.tokensCount = 0;
+		this.tokenId = "";
 	}
 
 	private void increaseTokensCount(ChaincodeStub stub) {
 		this.tokensCount += 1;
 		stub.putStringState("tokensCount", String.valueOf(this.tokensCount));
+	}
+
+	protected String getRecentCreatedTokenId() {
+		return this.tokenId;
 	}
 
     @Override
@@ -147,7 +153,8 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 			JSONObject tokenJsonObject;
 
 			if(from.equals("") == true) {
-				token = new Token(String.valueOf(this.tokensCount), to);
+				this.tokenId = String.valueOf(this.tokensCount);
+				token = new Token(this.tokenId, to);
 				tokenJsonObject = token.constructTokenJSONObject();
 
 				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
