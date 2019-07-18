@@ -2,13 +2,13 @@ package kr.ac.postech.sslab.protocol;
 
 import org.json.simple.JSONObject;
 
-public class Token {
+public class ExtendedToken {
     String tokenId;
     String tokenType;
     String owner;
     String approved;
 
-    public Token(String tokenId, String tokenType) {
+    public ExtendedToken(String tokenId, String tokenType) {
         this.tokenId = tokenId;
         this.tokenType = tokenType;
     }
