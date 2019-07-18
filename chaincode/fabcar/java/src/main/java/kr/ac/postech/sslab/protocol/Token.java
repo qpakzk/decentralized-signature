@@ -4,12 +4,12 @@ import java.util.HashMap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class StandardToken {
+public class Token {
     private String tokenId;
     private String owner;
     private String operator;
 
-    public StandardToken(String tokenId, String owner) {
+    public Token(String tokenId, String owner) {
         this.tokenId = tokenId;
         this.owner = owner;
         this.operator = "";
@@ -46,7 +46,7 @@ public class StandardToken {
         return jsonObject;
     }
 
-    public static StandardToken retrieveToken(String jsonString) {
+    public static Token retrieveToken(String jsonString) {
         try {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
@@ -54,7 +54,7 @@ public class StandardToken {
             String tokenId = String.valueOf(jsonObject.get("tokenId"));
             String owner = String.valueOf(jsonObject.get("owner"));
 
-            return new StandardToken(tokenId, owner);
+            return new Token(tokenId, owner);
         } catch(Throwable e) {
             e.printStackTrace(System.out);
             return null;

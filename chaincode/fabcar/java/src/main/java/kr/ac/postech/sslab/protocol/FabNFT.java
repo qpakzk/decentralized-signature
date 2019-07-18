@@ -141,11 +141,11 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 			String to = args.get(1);
 			String tokenId = args.get(2);
 			
-			StandardToken token;
+			Token token;
 			JSONObject tokenJsonObject;
 
 			if(from.equals("") == true) {
-				token = new StandardToken(String.valueOf(this.tokensCount), to);
+				token = new Token(String.valueOf(this.tokensCount), to);
 				tokenJsonObject = token.constructTokenJSONObject();
 
 				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
@@ -163,7 +163,7 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 					return newErrorResponse("-1");
 				}
 
-				token = StandardToken.retrieveToken(stringState);
+				token = Token.retrieveToken(stringState);
 				
 				if(token.getOwner().equals(from) == false) {
 					return newErrorResponse("-1");
@@ -192,7 +192,7 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 					return newErrorResponse("-1");
 				}
 
-			StandardToken token = StandardToken.retrieveToken(stringState);
+				Token token = Token.retrieveToken(stringState);
 
 			token.setOperator(approved);
 			JSONObject tokenJsonObject = token.constructTokenJSONObject();
