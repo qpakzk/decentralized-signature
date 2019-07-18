@@ -10,16 +10,24 @@ import java.util.List;
 
 public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 
-	long tokensCount;
+	private long tokensCount;
 
 	public FabNFT () {
 		this.tokensCount = 0;
+	}
+
+	private void increaseTokensCount(ChaincodeStub stub) {
+		this.tokensCount += 1;
+		stub.putStringState("tokensCount", String.valueOf(this.tokensCount));
 	}
 
     @Override
     public Response init(ChaincodeStub stub) {
 
     	try {
+			String tokensCountString = stub.getStringState("tokensCount");
+			tokensCount = Long.parseLong(tokensCountString);
+			
             return newSuccessResponse("Succeeded 'init' function");
         } catch (Throwable e) {
             return newErrorResponse("Failed 'init' function");
@@ -142,7 +150,7 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
 
 				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
 
-				this.tokensCount += 1;
+				increaseTokensCount(stub);
 				return newSuccessResponse(token.getTokenId());
 			}
 			else {
