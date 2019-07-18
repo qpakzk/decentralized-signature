@@ -8,6 +8,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.util.List;
 
+import kr.ac.postech.sslab.structure.Token;
+
 public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 
 	private long tokensCount;
