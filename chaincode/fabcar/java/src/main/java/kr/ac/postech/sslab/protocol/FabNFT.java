@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.util.List;
 
-public class FabNFT extends ChaincodeBase implements StandardFabNFT {
+public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 
 	private long tokensCount;
 
@@ -27,7 +27,7 @@ public class FabNFT extends ChaincodeBase implements StandardFabNFT {
     	try {
 			String tokensCountString = stub.getStringState("tokensCount");
 			tokensCount = Long.parseLong(tokensCountString);
-			
+
             return newSuccessResponse("Succeeded 'init' function");
         } catch (Throwable e) {
             return newErrorResponse("Failed 'init' function");
