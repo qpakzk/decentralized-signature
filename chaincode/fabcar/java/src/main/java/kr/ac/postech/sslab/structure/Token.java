@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab.protocol;
+package kr.ac.postech.sslab.structure;
 
 import java.util.HashMap;
 import org.json.simple.JSONObject;
