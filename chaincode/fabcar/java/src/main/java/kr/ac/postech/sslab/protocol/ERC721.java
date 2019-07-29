@@ -10,12 +10,12 @@ import java.util.List;
 
 import kr.ac.postech.sslab.structure.Token;
 
-public class FabNFT extends ChaincodeBase implements FabNFTInterface {
+public class ERC721 extends ChaincodeBase implements IERC721 {
 
 	private long tokensCount;
 	private String tokenId;
 
-	public FabNFT () {
+	public ERC721() {
 		this.tokensCount = 0;
 		this.tokenId = "";
 	}
@@ -213,7 +213,34 @@ public class FabNFT extends ChaincodeBase implements FabNFTInterface {
 		}
 	}
 	
+	@Override
+	public Response setApprovalForAll(ChaincodeStub stub, List<String> args) {
+		try {
+			return newSuccessResponse();
+		} catch (Throwable e) {
+			return newErrorResponse();
+		}
+	}
+
+	@Override
+    public Response getApproved(ChaincodeStub stub, List<String> args) {
+		try {
+			return newSuccessResponse();
+		} catch (Throwable e) {
+			return newErrorResponse();
+		}
+	}
+
+	@Override
+	public Response isApprovedForAll(ChaincodeStub stub, List<String> args) {
+		try {
+			return newSuccessResponse();
+		} catch (Throwable e) {
+			return newErrorResponse();
+		}
+	}
+	
     public static void main(String[] args) {
-        new FabNFT().start(args);
+        new ERC721().start(args);
     }
 }
