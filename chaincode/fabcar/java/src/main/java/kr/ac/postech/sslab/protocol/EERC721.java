@@ -5,14 +5,18 @@ import java.util.List;
 
 import kr.ac.postech.sslab.structure.TokenManager;
 
-public class EFabNFT extends FabNFT implements EFabNFTInterface {
+public class EERC721 extends ERC721 implements IEERC721 {
     private String tokenType;
 
-    public EFabNFT(String tokenType) {
+    public EERC721() {
         super();
-        this.tokenType = tokenType;
     }
 
+	@Override
+	public Response init(ChaincodeStub stub) {
+        return newSuccessResponse();
+	}
+	
     @Override
     public Response invoke(ChaincodeStub stub) {
 
@@ -113,4 +117,8 @@ public class EFabNFT extends FabNFT implements EFabNFTInterface {
             return newErrorResponse("Failed 'queryTokenHistory' function");
 		}
 	}
+
+	public static void main(String[] args) {
+        new EERC721().start(args);
+    }
 }

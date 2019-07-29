@@ -10,8 +10,7 @@ import java.util.List;
 
 import kr.ac.postech.sslab.structure.Token;
 
-public class ERC721 extends ChaincodeBase implements IERC721 {
-
+abstract public class ERC721 extends ChaincodeBase implements IERC721 {
 	private long tokensCount;
 	private String tokenId;
 
@@ -30,47 +29,15 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 	}
 
     @Override
-    public Response init(ChaincodeStub stub) {
-
-    	try {
-			String tokensCountString = stub.getStringState("tokensCount");
-			tokensCount = Long.parseLong(tokensCountString);
-
-            return newSuccessResponse("Succeeded 'init' function");
-        } catch (Throwable e) {
-            return newErrorResponse("Failed 'init' function");
-		}
-    }
+    abstract public Response init(ChaincodeStub stub);
 
     @Override
-    public Response invoke(ChaincodeStub stub) {
-
-        try {
-            String func = stub.getFunction();
-			List<String> args = stub.getParameters();
-			
-			if (func.equals("balanceOf")) {
-				return this.balanceOf(stub, args);
-			}
-			else if (func.equals("ownerOf")) {
-				return this.ownerOf(stub, args);
-			}
-			else if(func.equals("transferFrom")) {
-				return this.transferFrom(stub, args);
-			}
-			else if (func.equals("approve")) {
-				return this.approve(stub, args);
-			}
-
-			return newErrorResponse("Invalid invoke function name.");
-		} catch (Throwable e) {
-			return newErrorResponse(e.getMessage());
-		}
-	}
+    abstract public Response invoke(ChaincodeStub stub);
 
 	@Override
 	public Response balanceOf(ChaincodeStub stub, List<String> args) {
 		try {
+			
 			//parameter
 			String owner = args.get(0);
 			
@@ -80,12 +47,12 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String balance = getNumberOfTokensForQueryString(stub, queryString);
 
 			if(balance == null) {
-				return newErrorResponse("-1");
+				return newErrorResponse();
 			}
 
-		    return newSuccessResponse(balance);
+		    return newSuccessResponse();
 		} catch (Throwable e) {
-		    return newErrorResponse("-1");
+		    return newErrorResponse();
 	    }
 	}
 
@@ -114,7 +81,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String tokenId = args.get(0);
 
 			if(tokenId == null) {
-				return newErrorResponse("-1");
+				return newErrorResponse();
 			}
 
 			//return
@@ -123,7 +90,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		    return newSuccessResponse(owner.getBytes("utf-8"));
 	    } catch (Throwable e) {
 			e.printStackTrace();
-		    return newErrorResponse("-1");
+		    return newErrorResponse();
 	    }
 	}
 
@@ -164,18 +131,18 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			}
 			else {
 				if(tokenId.equals("") == true) {
-					return newErrorResponse("-1");
+					return newErrorResponse();
 				}
 
 				String stringState = stub.getStringState(tokenId);
 				if(stringState == null) {
-					return newErrorResponse("-1");
+					return newErrorResponse();
 				}
 
 				token = Token.retrieveToken(stringState);
 				
 				if(token.getOwner().equals(from) == false) {
-					return newErrorResponse("-1");
+					return newErrorResponse();
 				}
 
 				token.setOwner(to);
@@ -185,7 +152,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				return newSuccessResponse(tokenJsonObject.toString());
 			}
 		} catch(Throwable e) {
-			return newErrorResponse("-1");
+			return newErrorResponse();
 		}
 	}
 
@@ -198,7 +165,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 			String stringState = stub.getStringState(tokenId);
 				if(stringState == null) {
-					return newErrorResponse("-1");
+					return newErrorResponse();
 				}
 
 				Token token = Token.retrieveToken(stringState);
@@ -209,7 +176,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
 			return newSuccessResponse(token.getOperator());
 		} catch (Throwable e) {
-			return newErrorResponse("-1");
+			return newErrorResponse();
 		}
 	}
 	
@@ -239,8 +206,4 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			return newErrorResponse();
 		}
 	}
-	
-    public static void main(String[] args) {
-        new ERC721().start(args);
-    }
 }
