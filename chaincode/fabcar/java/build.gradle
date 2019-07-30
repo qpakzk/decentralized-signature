@@ -16,12 +16,16 @@ sourceCompatibility = 1.8
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url "https://repository.mulesoft.org/nexus/content/repositories/public/"
+    }
 }
 
 dependencies {
     compile group: 'org.hyperledger.fabric-chaincode-java', name: 'fabric-chaincode-shim', version: '1.+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
 }
 
 shadowJar {
@@ -30,6 +34,6 @@ shadowJar {
     classifier = null
 
     manifest {
-        attributes 'Main-Class': 'kr.ac.postech.sslab.protocol.FabNFT'
+        attributes 'Main-Class': 'kr.ac.postech.sslab.protocol.EERC721'
     }
 }
