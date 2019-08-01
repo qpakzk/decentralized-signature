@@ -65,6 +65,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			else if(func.equals("isApprovedForAll")) {
 				return super.isApprovedForAll(stub, args);
 			}
+			else if (func.equals("mint")) {
+				return this.mint(stub, args);
+			}
 			else if (func.equals("divide")) {
 				return this.divide(stub, args);
 			}
@@ -83,7 +86,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			return newErrorResponse("Invalid invoke method name. Expecting one of: "
 					+ "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\", "
-					+ "\"divide\", \"delete\", \"update\", \"query\", \"queryTokenHistory\"]");
+					+ "\"mint\", \"divide\", \"delete\", \"update\", \"query\", \"queryTokenHistory\"]");
 		} catch (Throwable e) {
 			return newErrorResponse(e);
 		}
