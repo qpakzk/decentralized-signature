@@ -1,187 +1,158 @@
 package kr.ac.postech.sslab.protocol;
 
+import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
+import kr.ac.postech.sslab.msg_type.MsgTransferNFT;
+import kr.ac.postech.sslab.structure.Token;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+
+import java.util.Iterator;
 import java.util.List;
 
-import kr.ac.postech.sslab.structure.Token;
-
-abstract public class ERC721 extends ChaincodeBase implements IERC721 {
-	private long tokensCount;
-	private String tokenId;
+public class ERC721 extends ChaincodeBase implements IERC721 {
+    private static Log _logger = LogFactory.getLog(ERC721.class);
+	private FabNFTManager nftManager;
 
 	public ERC721() {
-		this.tokensCount = 0;
-		this.tokenId = "";
+		this.nftManager = new FabNFTManager();
 	}
 
-	private void increaseTokensCount(ChaincodeStub stub) {
-		this.tokensCount += 1;
-		stub.putStringState("tokensCount", String.valueOf(this.tokensCount));
+	protected FabNFTManager getNFTManager() {
+		return this.nftManager;
 	}
 
-	protected String getRecentCreatedTokenId() {
-		return this.tokenId;
-	}
+	@Override
+	public Response init(ChaincodeStub stub) {
+        try {
+            _logger.info("Init java ERC721 chaincode");
+            String func = stub.getFunction();
 
+            if (!func.equals("init")) {
+                return newErrorResponse("Method other than init is not supported");
+            }
+
+            List<String> args = stub.getParameters();
+            if (args.size() != 0) {
+                newErrorResponse("Incorrect number of arguments. Expecting 0");
+            }
+
+            return newSuccessResponse();
+        } catch (Throwable e) {
+            return newErrorResponse(e);
+        }
+	}
+	
     @Override
-    abstract public Response init(ChaincodeStub stub);
+    public Response invoke(ChaincodeStub stub) {
+	    try {
+            _logger.info("Invoke java ERC721 chaincode");
+            String func = stub.getFunction();
+            List<String> args = stub.getParameters();
 
-    @Override
-    abstract public Response invoke(ChaincodeStub stub);
+            if(func.equals("balanceOf")) {
+                return this.balanceOf(stub, args);
+            }
+            else if(func.equals("ownerOf")) {
+                return this.ownerOf(stub, args);
+            }
+            else if(func.equals("transferFrom")) {
+                return this.transferFrom(stub, args);
+            }
+            else if(func.equals("approve")) {
+                return this.approve(stub, args);
+            }
+            else if(func.equals("setApprovalForAll")) {
+                return this.setApprovalForAll(stub, args);
+            }
+            else if(func.equals("getApproved")) {
+                return this.getApproved(stub, args);
+            }
+            else if(func.equals("isApprovedForAll")) {
+                return this.isApprovedForAll(stub, args);
+            }
+
+            return newErrorResponse("Invalid invoke method name. Expecting one of: "
+                    + "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\"]");
+        } catch (Throwable e) {
+            return newErrorResponse(e);
+        }
+	}
 
 	@Override
 	public Response balanceOf(ChaincodeStub stub, List<String> args) {
-		try {
-			
-			//parameter
-			String owner = args.get(0);
-			
-			String queryString = "{\"owner\":\"" + owner + "\"}";
-			
-			//return
-			String balance = getNumberOfTokensForQueryString(stub, queryString);
+		if(args.size() != 1)
+			return newErrorResponse("Incorrect number of arguments, expecting 1");
+		
+		String _owner = args.get(0);
 
-			if(balance == null) {
-				return newErrorResponse();
-			}
-
-		    return newSuccessResponse();
-		} catch (Throwable e) {
-		    return newErrorResponse();
-	    }
+		long balance = nftManager.queryNumberOfNFTs(stub, _owner);
+		
+		return newSuccessResponse(String.valueOf(balance));
 	}
 
-	private String getNumberOfTokensForQueryString(ChaincodeStub stub, String queryString) {
-
-	    int numberOfTokens = 0;
-
-	    try {
-		    QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(queryString);
-		    while(resultsIterator.iterator().hasNext()) {
-			    resultsIterator.iterator().next().getStringValue();
-				numberOfTokens++;
-			}
-			
-			return String.valueOf(numberOfTokens);
-	    } catch (Throwable e) {
-		    return null;
-	    }
-    } 
-
-	
 	@Override
 	public Response ownerOf(ChaincodeStub stub, List<String> args) {
-	    try {
-			//parameter
-			String tokenId = args.get(0);
+		if(args.size() != 1) {
+            return newErrorResponse("Incorrect number of arguments, expecting 1");
+        }
 
-			if(tokenId == null) {
-				return newErrorResponse();
-			}
-
-			//return
-			String owner = _ownerOf(stub, tokenId);
-
-		    return newSuccessResponse(owner.getBytes("utf-8"));
-	    } catch (Throwable e) {
-			e.printStackTrace();
-		    return newErrorResponse();
-	    }
-	}
-
-	private String _ownerOf(ChaincodeStub stub, String tokenId) {
-		try {
-			String jsonString = stub.getStringState(tokenId);
-			
-			JSONParser parser = new JSONParser();
-			JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
-
-			return String.valueOf(jsonObject.get("owner"));
-		} catch (Throwable e) {
-			e.printStackTrace();
-			return null;
-		}
+		String _tokenId = args.get(0);
+		
+		String owner = nftManager.queryOwner(stub, _tokenId);
+		if(owner == null)
+			return newErrorResponse(String.format("No such a token that has id %s", _tokenId));
+		return newSuccessResponse(owner);
 	}
 
 	@Override
 	public Response transferFrom(ChaincodeStub stub, List<String> args) {
-		try {
-			//parameter
-			String from = args.get(0);
-			String to = args.get(1);
-			String tokenId = args.get(2);
-			
-			Token token;
-			JSONObject tokenJsonObject;
+		if(args.size() != 3) {
+            return newErrorResponse("Incorrect number of arguments. Expecting 3");
+        }
 
-			if(from.equals("") == true) {
-				this.tokenId = String.valueOf(this.tokensCount);
-				token = new Token(this.tokenId, to);
-				tokenJsonObject = token.constructTokenJSONObject();
+		String _from = args.get(0);
+		String _to = args.get(1);
+		String _tokenId = args.get(2);
 
-				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
+        MsgTransferNFT msg = new MsgTransferNFT(_from, _to, _tokenId);
 
-				increaseTokensCount(stub);
-				return newSuccessResponse(token.getTokenId());
-			}
-			else {
-				if(tokenId.equals("") == true) {
-					return newErrorResponse();
-				}
-
-				String stringState = stub.getStringState(tokenId);
-				if(stringState == null) {
-					return newErrorResponse();
-				}
-
-				token = Token.retrieveToken(stringState);
-				
-				if(token.getOwner().equals(from) == false) {
-					return newErrorResponse();
-				}
-
-				token.setOwner(to);
-				tokenJsonObject = token.constructTokenJSONObject();
-				
-				stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
-				return newSuccessResponse(tokenJsonObject.toString());
-			}
-		} catch(Throwable e) {
-			return newErrorResponse();
-		}
+        if(nftManager.transfer(stub, msg)) {
+            return newSuccessResponse("Succeeded transfer method");
+        }
+        else {
+            return newErrorResponse("Failed transfer method");
+        }
 	}
 
 	@Override
 	public Response approve(ChaincodeStub stub, List<String> args) {
-		try {
-			//parameter
-			String approved = args.get(0);
-			String tokenId = args.get(1);
+		if(args.size() != 2) {
+            return newErrorResponse("Incorrect number of arguments. Expecting 2");
+        }
 
-			String stringState = stub.getStringState(tokenId);
-				if(stringState == null) {
-					return newErrorResponse();
-				}
+		String _approved = args.get(0);
+		String _tokenId = args.get(1);
 
-				Token token = Token.retrieveToken(stringState);
+        MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_approved, _tokenId);
+        nftManager.edit(stub, msg);
 
-			token.setOperator(approved);
-			JSONObject tokenJsonObject = token.constructTokenJSONObject();
-
-			stub.putStringState(token.getTokenId(), tokenJsonObject.toString());
-			return newSuccessResponse(token.getOperator());
-		} catch (Throwable e) {
-			return newErrorResponse();
-		}
+        return newSuccessResponse("Succeeded approve method");
 	}
 	
 	@Override
 	public Response setApprovalForAll(ChaincodeStub stub, List<String> args) {
+		if(args.size() != 2)
+			return newErrorResponse("Incorrect number of arguments. Expecting 2");
+		
+		String _operator = args.get(0);
+		boolean _approved = Boolean.valueOf(args.get(1));
+
+		byte[] _creator = stub.getCreator();
+		String creator = String.valueOf(_creator);
+
 		try {
 			return newSuccessResponse();
 		} catch (Throwable e) {
@@ -191,19 +162,43 @@ abstract public class ERC721 extends ChaincodeBase implements IERC721 {
 
 	@Override
     public Response getApproved(ChaincodeStub stub, List<String> args) {
-		try {
-			return newSuccessResponse();
-		} catch (Throwable e) {
-			return newErrorResponse();
-		}
+		if(args.size() != 1)
+			return newErrorResponse("Incorrect number of arguments. Expecting 1");
+		
+		String _tokenId = args.get(0);
+		String operator = nftManager.queryOperator(stub, _tokenId);
+
+		if(operator == null) {
+		    return newErrorResponse(String.format("Invalid NFT %s", _tokenId));
+        }
+
+		return newSuccessResponse(operator);
 	}
 
 	@Override
 	public Response isApprovedForAll(ChaincodeStub stub, List<String> args) {
-		try {
-			return newSuccessResponse();
-		} catch (Throwable e) {
-			return newErrorResponse();
-		}
+		if(args.size() != 2)
+			return newErrorResponse("Incorrect number of arguments. Expecting 2");
+		
+		String _owner = args.get(0);
+		String _operator = args.get(1);
+
+		List<String> nftIds = nftManager.queryIDsByOwner(stub, _owner);
+
+		if(nftIds == null) {
+		    return newSuccessResponse("false");
+        }
+
+        for(Iterator<String> it = nftIds.iterator(); it.hasNext(); ) {
+            if(it.next().equals(_operator)) {
+                return newSuccessResponse("true");
+            }
+        }
+
+		return newSuccessResponse("false");
 	}
+
+	public static void main(String[] args) {
+        new ERC721().start(args);
+    }
 }
