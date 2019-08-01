@@ -115,6 +115,7 @@ public class NFT {
             this.operator = String.valueOf(nftJSON.get("operator"));
             this.hash = String.valueOf(nftJSON.get("hash"));
             this.uri = String.valueOf(nftJSON.get("uri"));
+            this.isActivated =  (Boolean) nftJSON.get("isActivated");
 
             return true;
         } catch (Throwable e) {
