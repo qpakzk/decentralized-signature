@@ -20,7 +20,7 @@ public class NFT {
         nftMap.put("operator", this.operator);
         nftMap.put("hash", this.hash);
         nftMap.put("uri", this.uri);
-        nftMap.put("isActivated", String.valueOf(isActivated));
+        nftMap.put("isActivated", Boolean.toString(isActivated));
 
         return new JSONObject(nftMap);
     }
@@ -28,7 +28,7 @@ public class NFT {
     public String stringNFTJSON() {
         JSONObject nftJSON = this.constructNFTJSON();
 
-        return String.valueOf(nftJSON);
+        return nftJSON.toJSONString();
     }
 
     private void mint(ChaincodeStub stub, String id, String hash, String uri) {
@@ -89,7 +89,7 @@ public class NFT {
     }
 
     public void setIsActivated(ChaincodeStub stub, boolean isActivated) {
-        this.isActivated = false;
+        this.isActivated = isActivated;
         this.store(stub);
     }
 
@@ -110,12 +110,12 @@ public class NFT {
             JSONParser parser = new JSONParser();
             JSONObject nftJSON = (JSONObject) parser.parse(nftString);
 
-            this.id = String.valueOf(nftJSON.get("id"));
-            this.owner = String.valueOf(nftJSON.get("owner"));
-            this.operator = String.valueOf(nftJSON.get("operator"));
-            this.hash = String.valueOf(nftJSON.get("hash"));
-            this.uri = String.valueOf(nftJSON.get("uri"));
-            this.isActivated =  (Boolean) nftJSON.get("isActivated");
+            this.id = nftJSON.get("id").toString();
+            this.owner = nftJSON.get("owner").toString();
+            this.operator = nftJSON.get("operator").toString();
+            this.hash = nftJSON.get("hash").toString();
+            this.uri = nftJSON.get("uri").toString();
+            this.isActivated = (Boolean) nftJSON.get("isActivated");
 
             return true;
         } catch (Throwable e) {
