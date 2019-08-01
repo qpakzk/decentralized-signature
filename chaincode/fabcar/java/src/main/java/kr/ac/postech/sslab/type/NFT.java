@@ -33,8 +33,8 @@ public class NFT {
 
     private void mint(ChaincodeStub stub, String id, String hash, String uri) {
         this.id = id;
-        this.owner = null;
-        this.operator = null;
+        this.owner = "";
+        this.operator = "";
         this.hash = hash;
         this.uri = uri;
         this.isActivated = true;
