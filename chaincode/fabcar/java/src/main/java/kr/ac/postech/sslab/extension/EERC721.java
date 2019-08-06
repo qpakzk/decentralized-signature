@@ -12,22 +12,7 @@ import kr.ac.postech.sslab.standard.*;
 public class EERC721 extends ERC721 implements IEERC721 {
 	@Override
 	public Response init(ChaincodeStub stub) {
-		try {
-			String func = stub.getFunction();
-
-			if (!func.equals("init")) {
-				throw new Throwable("Method other than init is not supported");
-			}
-
-			List<String> args = stub.getParameters();
-			if (args.size() != 0) {
-				throw new Throwable("Incorrect number of arguments. Expecting 0");
-			}
-
-			return ResponseUtils.newSuccessResponse();
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return super.init(stub);
 	}
 	
     @Override
@@ -36,49 +21,52 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String func = stub.getFunction();
 			List<String> args = stub.getParameters();
 
-			if(func.equals("balanceOf")) {
-				return super.balanceOf(stub, args);
-			}
-			else if(func.equals("ownerOf")) {
-				return super.ownerOf(stub, args);
-			}
-			else if(func.equals("transferFrom")) {
-				return super.transferFrom(stub, args);
-			}
-			else if(func.equals("approve")) {
-				return super.approve(stub, args);
-			}
-			else if(func.equals("setApprovalForAll")) {
-				return super.setApprovalForAll(stub, args);
-			}
-			else if(func.equals("getApproved")) {
-				return super.getApproved(stub, args);
-			}
-			else if(func.equals("isApprovedForAll")) {
-				return super.isApprovedForAll(stub, args);
-			}
-			else if (func.equals("mint")) {
-				return this.mint(stub, args);
-			}
-			else if (func.equals("divide")) {
-				return this.divide(stub, args);
-			}
-			else if (func.equals("delete")) {
-				return this.delete(stub, args);
-			}
-			else if (func.equals("update")) {
-				return this.update(stub, args);
-			}
-			else if (func.equals("query")) {
-				return this.query(stub, args);
-			}
-			else if (func.equals("queryTokenHistory")) {
-				return this.queryTokenHistory(stub, args);
+			switch (func) {
+				case "balanceOf":
+					return super.balanceOf(stub, args);
+
+				case "ownerOf":
+					return super.ownerOf(stub, args);
+
+				case "transferFrom":
+					return super.transferFrom(stub, args);
+
+				case "approve":
+					return super.approve(stub, args);
+
+				case "setApprovalForAll":
+					return super.setApprovalForAll(stub, args);
+
+				case "getApproved":
+					return super.getApproved(stub, args);
+
+				case "isApprovedForAll":
+					return super.isApprovedForAll(stub, args);
+
+				case "mint":
+					return this.mint(stub, args);
+
+				case "divide":
+					return this.divide(stub, args);
+
+				case "delete":
+					return this.delete(stub, args);
+
+				case "update":
+					return this.update(stub, args);
+
+				case "query":
+					return this.query(stub, args);
+
+				case "queryTokenHistory":
+					return this.queryTokenHistory(stub, args);
+
+				default:
+					throw new Throwable("Invalid invoke method name. Expecting one of: "
+							+ "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\", "
+							+ "\"mint\", \"divide\", \"delete\", \"update\", \"query\", \"queryTokenHistory\"]");
 			}
 
-			throw new Throwable("Invalid invoke method name. Expecting one of: "
-					+ "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\", "
-					+ "\"mint\", \"divide\", \"delete\", \"update\", \"query\", \"queryTokenHistory\"]");
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}

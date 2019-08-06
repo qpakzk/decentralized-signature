@@ -7,7 +7,6 @@ import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class ERC721 extends ChaincodeBase implements IERC721 {
@@ -37,31 +36,34 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
             String func = stub.getFunction();
             List<String> args = stub.getParameters();
 
-            if(func.equals("balanceOf")) {
-                return this.balanceOf(stub, args);
-            }
-            else if(func.equals("ownerOf")) {
-                return this.ownerOf(stub, args);
-            }
-            else if(func.equals("transferFrom")) {
-                return this.transferFrom(stub, args);
-            }
-            else if(func.equals("approve")) {
-                return this.approve(stub, args);
-            }
-            else if(func.equals("setApprovalForAll")) {
-                return this.setApprovalForAll(stub, args);
-            }
-            else if(func.equals("getApproved")) {
-                return this.getApproved(stub, args);
-            }
-            else if(func.equals("isApprovedForAll")) {
-                return this.isApprovedForAll(stub, args);
-            }
+            switch (func) {
+				case "balanceOf":
+					return this.balanceOf(stub, args);
 
-            throw new Throwable("Invalid invoke method name. Expecting one of: "
-                    + "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\"]");
-        } catch (Throwable throwable) {
+				case "ownerOf":
+					return this.ownerOf(stub, args);
+
+				case "transferFrom":
+					return this.transferFrom(stub, args);
+
+				case "approve":
+					return this.approve(stub, args);
+
+				case "setApprovalForAll":
+					return this.setApprovalForAll(stub, args);
+
+				case "getApproved":
+					return this.getApproved(stub, args);
+
+				case "isApprovedForAll":
+					return this.isApprovedForAll(stub, args);
+
+				default:
+					throw new Throwable("Invalid invoke method name. Expecting one of: "
+							+ "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\"]");
+			}
+
+		} catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
 	}
@@ -198,8 +200,8 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				return ResponseUtils.newSuccessResponse("false");
 			}
 
-			for (Iterator<String> it = nftIds.iterator(); it.hasNext(); ) {
-				if (it.next().equals(_operator)) {
+			for (String id : nftIds) {
+				if(id.equals(_operator)) {
 					return ResponseUtils.newSuccessResponse("true");
 				}
 			}
