@@ -10,13 +10,6 @@ import java.util.List;
 import kr.ac.postech.sslab.standard.*;
 
 public class EERC721 extends ERC721 implements IEERC721 {
-	private HFNFTMP hfnftmp;
-
-	public EERC721() {
-		super();
-		this.hfnftmp = super.getNFTManager();
-	}
-
 	@Override
 	public Response init(ChaincodeStub stub) {
 		try {
@@ -103,7 +96,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			MsgMintNFT msg = new MsgMintNFT(_hash, _uri);
 
-			String nftString = this.hfnftmp.mint(stub, msg);
+			String nftString = HFNFTMP.mint(stub, msg);
 
 			if (nftString == null) {
 				throw new Throwable("NFT not minted.");
@@ -138,7 +131,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String _tokenId = args.get(0);
 
-			hfnftmp.deactivate(stub, _tokenId);
+			HFNFTMP.deactivate(stub, _tokenId);
 			return ResponseUtils.newSuccessResponse();
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
@@ -157,7 +150,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String _tokenId = args.get(2);
 
 			MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_tokenId, _hash, _uri);
-			hfnftmp.edit(stub, msg);
+			HFNFTMP.edit(stub, msg);
 			return ResponseUtils.newSuccessResponse();
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
@@ -173,7 +166,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String _tokenId = args.get(0);
 
-			String nftString = hfnftmp.query(stub, _tokenId);
+			String nftString = HFNFTMP.query(stub, _tokenId);
 
 			return ResponseUtils.newSuccessResponse(nftString);
 		} catch (Throwable throwable) {
@@ -190,7 +183,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String _tokenId = args.get(0);
 
-			String histories = hfnftmp.queryHistory(stub, _tokenId);
+			String histories = HFNFTMP.queryHistory(stub, _tokenId);
 
 			return ResponseUtils.newSuccessResponse(histories);
 		} catch (Throwable throwable) {

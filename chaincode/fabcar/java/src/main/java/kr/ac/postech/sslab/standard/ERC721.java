@@ -11,16 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ERC721 extends ChaincodeBase implements IERC721 {
-	private HFNFTMP hfnftmp;
-
-	public ERC721() {
-		this.hfnftmp = new HFNFTMP();
-	}
-
-	protected HFNFTMP getNFTManager() {
-		return this.hfnftmp;
-	}
-
 	@Override
 	public Response init(ChaincodeStub stub) {
         try {
@@ -85,7 +75,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 			String _owner = args.get(0);
 
-			long balance = hfnftmp.queryNumberOfNFTs(stub, _owner);
+			long balance = HFNFTMP.queryNumberOfNFTs(stub, _owner);
 
 			return ResponseUtils.newSuccessResponse(String.valueOf(balance));
 		} catch (Throwable throwable) {
@@ -102,7 +92,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 			String _tokenId = args.get(0);
 
-			String owner = hfnftmp.queryOwner(stub, _tokenId);
+			String owner = HFNFTMP.queryOwner(stub, _tokenId);
 			if (owner == null) {
 				throw new Throwable(String.format("No such a NFT that has id %s", _tokenId));
 			}
@@ -127,7 +117,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			MsgTransferNFT msg = new MsgTransferNFT(_from, _to, _tokenId);
 
 
-			hfnftmp.transfer(stub, msg);
+			HFNFTMP.transfer(stub, msg);
 			return ResponseUtils.newSuccessResponse();
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
@@ -145,7 +135,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String _tokenId = args.get(1);
 
 			MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_approved, _tokenId);
-			hfnftmp.edit(stub, msg);
+			HFNFTMP.edit(stub, msg);
 
 			return ResponseUtils.newSuccessResponse();
 		} catch (Throwable throwable) {
@@ -180,7 +170,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			}
 
 			String _tokenId = args.get(0);
-			String operator = hfnftmp.queryOperator(stub, _tokenId);
+			String operator = HFNFTMP.queryOperator(stub, _tokenId);
 
 			if (operator == null) {
 				throw new Throwable(String.format("Invalid NFT %s", _tokenId));
@@ -202,7 +192,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String _owner = args.get(0);
 			String _operator = args.get(1);
 
-			List<String> nftIds = hfnftmp.queryIDsByOwner(stub, _owner);
+			List<String> nftIds = HFNFTMP.queryIDsByOwner(stub, _owner);
 
 			if (nftIds == null) {
 				return ResponseUtils.newSuccessResponse("false");

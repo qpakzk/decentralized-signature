@@ -19,14 +19,14 @@ public class HFNFTMP {
         HFNFTMP.tokenCounts += 1;
     }
 
-    public String mint(ChaincodeStub stub, MsgMintNFT msg) {
+    public static String mint(ChaincodeStub stub, MsgMintNFT msg) {
         NFT nft = new NFT(stub, String.valueOf(HFNFTMP.tokenCounts), msg.getHash(), msg.getUri());
         HFNFTMP.increaseTokenCounts();
 
         return nft.stringNFTJSON();
     }
 
-    public boolean transfer(ChaincodeStub stub, MsgTransferNFT msg) {
+    public static boolean transfer(ChaincodeStub stub, MsgTransferNFT msg) {
         NFT nft = NFT.retrieve(stub, msg.getId());
         if(nft.getOwner().equals(msg.getSender()) || nft.getOwner().equals("")) {
             nft.setOwner(stub, msg.getRecipient());
@@ -36,7 +36,7 @@ public class HFNFTMP {
         return false;
     }
 
-    public void edit(ChaincodeStub stub, MsgEditNFTMetadata msg) {
+    public static void edit(ChaincodeStub stub, MsgEditNFTMetadata msg) {
         NFT nft = NFT.retrieve(stub, msg.getId());
         if(msg.getParams() == 2) {
             nft.setOperator(stub, msg.getOperator());
@@ -46,19 +46,19 @@ public class HFNFTMP {
         }
     }
 
-    public void deactivate(ChaincodeStub stub, String id) {
+    public static void deactivate(ChaincodeStub stub, String id) {
         NFT nft = NFT.retrieve(stub, id);
         if(nft.getIsActivated())
             nft.setIsActivated(stub, false);
     }
 
-    public void activate(ChaincodeStub stub, String id) {
+    public static void activate(ChaincodeStub stub, String id) {
         NFT nft = NFT.retrieve(stub, id);
         if(!nft.getIsActivated())
             nft.setIsActivated(stub, true);
     }
 
-    public boolean burn(ChaincodeStub stub, MsgBurnNFT msg) {
+    public static boolean burn(ChaincodeStub stub, MsgBurnNFT msg) {
         NFT nft = NFT.retrieve(stub, msg.getId());
         if(nft.getOwner().equals(msg.getSender())) {
             nft.burn(stub, msg.getId());
@@ -68,12 +68,12 @@ public class HFNFTMP {
         return false;
     }
 
-    public String query(ChaincodeStub stub, String id) {
+    public static String query(ChaincodeStub stub, String id) {
         NFT nft = NFT.retrieve(stub, id);
         return nft.stringNFTJSON();
     }
 
-    public long queryNumberOfNFTs(ChaincodeStub stub, String owner) {
+    public static long queryNumberOfNFTs(ChaincodeStub stub, String owner) {
         String queryString = "{\"owner\":\"" + owner + "\"}";
         long numberOfNFTs = 0;
 
@@ -86,7 +86,7 @@ public class HFNFTMP {
         return numberOfNFTs;
     }
 
-    public List<String> queryIDsByOwner(ChaincodeStub stub, String owner) {
+    public static List<String> queryIDsByOwner(ChaincodeStub stub, String owner) {
         List<String> ids = new LinkedList<>();
         String queryString = "{\"owner\":\"" + owner + "\"}";
 
@@ -100,17 +100,17 @@ public class HFNFTMP {
         return ids;
     }
 
-    public String queryOwner(ChaincodeStub stub, String id) {
+    public static String queryOwner(ChaincodeStub stub, String id) {
         NFT nft = NFT.retrieve(stub, id);
         return nft.getOwner();
 	}
 
-	public  String queryOperator(ChaincodeStub stub, String id) {
+	public static String queryOperator(ChaincodeStub stub, String id) {
         NFT nft = NFT.retrieve(stub, id);
         return nft.getOperator();
     }
 
-    public String queryHistory(ChaincodeStub stub, String id) {
+    public static String queryHistory(ChaincodeStub stub, String id) {
         List<String> history = new LinkedList<>();
         QueryResultsIterator<KeyModification> resultsIterator = stub.getHistoryForKey(id);
         while (resultsIterator.iterator().hasNext()) {
