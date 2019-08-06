@@ -2,15 +2,14 @@ package kr.ac.postech.sslab.extension;
 
 import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
 import kr.ac.postech.sslab.msg_type.MsgMintNFT;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.hyperledger.fabric.shim.ResponseUtils;
 import java.util.List;
 
 import kr.ac.postech.sslab.standard.*;
 
 public class EERC721 extends ERC721 implements IEERC721 {
-	private static Log _logger = LogFactory.getLog(EERC721.class);
 	private HFNFTMP hfnftmp;
 
 	public EERC721() {
@@ -21,28 +20,26 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	@Override
 	public Response init(ChaincodeStub stub) {
 		try {
-			_logger.info("Init java EERC721 chaincode");
 			String func = stub.getFunction();
 
 			if (!func.equals("init")) {
-				return newErrorResponse("Method other than init is not supported");
+				throw new Throwable("Method other than init is not supported");
 			}
 
 			List<String> args = stub.getParameters();
 			if (args.size() != 0) {
-				newErrorResponse("Incorrect number of arguments. Expecting 0");
+				throw new Throwable("Incorrect number of arguments. Expecting 0");
 			}
 
-			return newSuccessResponse();
-		} catch (Throwable e) {
-			return newErrorResponse(e);
+			return ResponseUtils.newSuccessResponse();
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 	
     @Override
     public Response invoke(ChaincodeStub stub) {
 		try {
-			_logger.info("Invoke java EERC721 chaincode");
 			String func = stub.getFunction();
 			List<String> args = stub.getParameters();
 
@@ -86,95 +83,119 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				return this.queryTokenHistory(stub, args);
 			}
 
-			return newErrorResponse("Invalid invoke method name. Expecting one of: "
+			throw new Throwable("Invalid invoke method name. Expecting one of: "
 					+ "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\", "
 					+ "\"mint\", \"divide\", \"delete\", \"update\", \"query\", \"queryTokenHistory\"]");
-		} catch (Throwable e) {
-			return newErrorResponse(e);
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 
 	@Override
 	public Response mint(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 2) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 2");
+		try {
+			if (args.size() != 2) {
+				throw new Throwable("Incorrect number of arguments. Expecting 2");
+			}
+
+			String _hash = args.get(0);
+			String _uri = args.get(1);
+
+			MsgMintNFT msg = new MsgMintNFT(_hash, _uri);
+
+			String nftString = this.hfnftmp.mint(stub, msg);
+
+			if (nftString == null) {
+				throw new Throwable("NFT not minted.");
+			}
+
+			return ResponseUtils.newSuccessResponse(nftString);
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
-
-		String _hash = args.get(0);
-		String _uri = args.get(1);
-
-		MsgMintNFT msg = new MsgMintNFT(_hash, _uri);
-
-		String nftString = this.hfnftmp.mint(stub, msg);
-
-		if(nftString == null) {
-			return newErrorResponse("NFT not minted.");
-		}
-
-		return newSuccessResponse(nftString);
 	}
 
 	@Override
 	public Response divide(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 1) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 1");
-		}
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
 
-		String _tokenId = args.get(0);
-		return newSuccessResponse();
+			String _tokenId = args.get(0);
+			return ResponseUtils.newSuccessResponse();
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
+		}
 	}
 
 	@Override
     public Response delete(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 1) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 1");
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
+
+			String _tokenId = args.get(0);
+
+			hfnftmp.deactivate(stub, _tokenId);
+			return ResponseUtils.newSuccessResponse();
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
-
-		String _tokenId = args.get(0);
-
-		hfnftmp.deactivate(stub, _tokenId);
-		return newSuccessResponse();
 	}
 
 	@Override
     public Response update(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 3) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 3");
+		try {
+			if (args.size() != 3) {
+				throw new Throwable("Incorrect number of arguments. Expecting 3");
+			}
+
+			String _hash = args.get(0);
+			String _uri = args.get(1);
+			String _tokenId = args.get(2);
+
+			MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_tokenId, _hash, _uri);
+			hfnftmp.edit(stub, msg);
+			return ResponseUtils.newSuccessResponse();
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
-
-		String _hash = args.get(0);
-		String _uri = args.get(1);
-		String _tokenId = args.get(2);
-
-		MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_tokenId, _hash, _uri);
-		hfnftmp.edit(stub, msg);
-		return newSuccessResponse();
 	}
 
 	@Override
     public Response query(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 1) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 1");
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
+
+			String _tokenId = args.get(0);
+
+			String nftString = hfnftmp.query(stub, _tokenId);
+
+			return ResponseUtils.newSuccessResponse(nftString);
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
-
-		String _tokenId = args.get(0);
-
-		String nftString = hfnftmp.query(stub, _tokenId);
-
-		return newSuccessResponse(nftString);
 	}
 
 	@Override
     public Response queryTokenHistory(ChaincodeStub stub, List<String> args) {
-		if(args.size() != 1) {
-			return newErrorResponse("Incorrect number of arguments. Expecting 1");
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
+
+			String _tokenId = args.get(0);
+
+			String histories = hfnftmp.queryHistory(stub, _tokenId);
+
+			return ResponseUtils.newSuccessResponse(histories);
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
-
-		String _tokenId = args.get(0);
-
-		String histories = hfnftmp.queryHistory(stub, _tokenId);
-
-		return newSuccessResponse(histories);
 	}
 
 	public static void main(String[] args) {
