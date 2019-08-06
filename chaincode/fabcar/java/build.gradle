@@ -34,6 +34,6 @@ shadowJar {
     classifier = null
 
     manifest {
-        attributes 'Main-Class': 'kr.ac.postech.sslab.protocol.EERC721'
+        attributes 'Main-Class': 'kr.ac.postech.sslab.extension.EERC721'
     }
 }

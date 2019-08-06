@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab.protocol;
+package kr.ac.postech.sslab.extension;
 
 import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
 import kr.ac.postech.sslab.msg_type.MsgMintNFT;
@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.List;
+
+import kr.ac.postech.sslab.standard.*;
 
 public class EERC721 extends ERC721 implements IEERC721 {
 	private static Log _logger = LogFactory.getLog(EERC721.class);

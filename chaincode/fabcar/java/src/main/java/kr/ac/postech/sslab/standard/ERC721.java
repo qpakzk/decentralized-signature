@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab.protocol;
+package kr.ac.postech.sslab.standard;
 
 import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
 import kr.ac.postech.sslab.msg_type.MsgTransferNFT;

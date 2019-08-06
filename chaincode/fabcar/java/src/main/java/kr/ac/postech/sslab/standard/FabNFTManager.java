@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab.protocol;
+package kr.ac.postech.sslab.standard;
 
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyModification;
