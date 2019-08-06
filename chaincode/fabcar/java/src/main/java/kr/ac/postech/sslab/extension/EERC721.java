@@ -11,11 +11,11 @@ import kr.ac.postech.sslab.standard.*;
 
 public class EERC721 extends ERC721 implements IEERC721 {
 	private static Log _logger = LogFactory.getLog(EERC721.class);
-	private FabNFTManager nftManager;
+	private HFNFTMP hfnftmp;
 
 	public EERC721() {
 		super();
-		this.nftManager = super.getNFTManager();
+		this.hfnftmp = super.getNFTManager();
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 		MsgMintNFT msg = new MsgMintNFT(_hash, _uri);
 
-		String nftString = this.nftManager.mint(stub, msg);
+		String nftString = this.hfnftmp.mint(stub, msg);
 
 		if(nftString == null) {
 			return newErrorResponse("NFT not minted.");
@@ -132,7 +132,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 		String _tokenId = args.get(0);
 
-		nftManager.deactivate(stub, _tokenId);
+		hfnftmp.deactivate(stub, _tokenId);
 		return newSuccessResponse();
 	}
 
@@ -147,7 +147,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 		String _tokenId = args.get(2);
 
 		MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_tokenId, _hash, _uri);
-		nftManager.edit(stub, msg);
+		hfnftmp.edit(stub, msg);
 		return newSuccessResponse();
 	}
 
@@ -159,7 +159,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 		String _tokenId = args.get(0);
 
-		String nftString = nftManager.query(stub, _tokenId);
+		String nftString = hfnftmp.query(stub, _tokenId);
 
 		return newSuccessResponse(nftString);
 	}
@@ -172,7 +172,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 		String _tokenId = args.get(0);
 
-		String histories = nftManager.queryHistory(stub, _tokenId);
+		String histories = hfnftmp.queryHistory(stub, _tokenId);
 
 		return newSuccessResponse(histories);
 	}

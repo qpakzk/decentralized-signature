@@ -2,26 +2,24 @@ package kr.ac.postech.sslab.standard;
 
 import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
 import kr.ac.postech.sslab.msg_type.MsgTransferNFT;
-import kr.ac.postech.sslab.structure.Token;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.json.simple.JSONObject;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class ERC721 extends ChaincodeBase implements IERC721 {
     private static Log _logger = LogFactory.getLog(ERC721.class);
-	private FabNFTManager nftManager;
+	private HFNFTMP hfnftmp;
 
 	public ERC721() {
-		this.nftManager = new FabNFTManager();
+		this.hfnftmp = new HFNFTMP();
 	}
 
-	protected FabNFTManager getNFTManager() {
-		return this.nftManager;
+	protected HFNFTMP getNFTManager() {
+		return this.hfnftmp;
 	}
 
 	@Override
@@ -88,7 +86,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		
 		String _owner = args.get(0);
 
-		long balance = nftManager.queryNumberOfNFTs(stub, _owner);
+		long balance = hfnftmp.queryNumberOfNFTs(stub, _owner);
 		
 		return newSuccessResponse(String.valueOf(balance));
 	}
@@ -101,7 +99,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 		String _tokenId = args.get(0);
 		
-		String owner = nftManager.queryOwner(stub, _tokenId);
+		String owner = hfnftmp.queryOwner(stub, _tokenId);
 		if(owner == null)
 			return newErrorResponse(String.format("No such a token that has id %s", _tokenId));
 		return newSuccessResponse(owner);
@@ -119,7 +117,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
         MsgTransferNFT msg = new MsgTransferNFT(_from, _to, _tokenId);
 
-        if(nftManager.transfer(stub, msg)) {
+        if(hfnftmp.transfer(stub, msg)) {
             return newSuccessResponse("Succeeded transfer method");
         }
         else {
@@ -137,7 +135,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		String _tokenId = args.get(1);
 
         MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_approved, _tokenId);
-        nftManager.edit(stub, msg);
+		hfnftmp.edit(stub, msg);
 
         return newSuccessResponse("Succeeded approve method");
 	}
@@ -166,7 +164,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			return newErrorResponse("Incorrect number of arguments. Expecting 1");
 		
 		String _tokenId = args.get(0);
-		String operator = nftManager.queryOperator(stub, _tokenId);
+		String operator = hfnftmp.queryOperator(stub, _tokenId);
 
 		if(operator == null) {
 		    return newErrorResponse(String.format("Invalid NFT %s", _tokenId));
@@ -183,7 +181,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		String _owner = args.get(0);
 		String _operator = args.get(1);
 
-		List<String> nftIds = nftManager.queryIDsByOwner(stub, _owner);
+		List<String> nftIds = hfnftmp.queryIDsByOwner(stub, _owner);
 
 		if(nftIds == null) {
 		    return newSuccessResponse("false");

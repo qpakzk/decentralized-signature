@@ -12,16 +12,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FabNFTManager {
+public class HFNFTMP {
     private static long tokenCounts = 0;
 
     private static void increaseTokenCounts() {
-        FabNFTManager.tokenCounts += 1;
+        HFNFTMP.tokenCounts += 1;
     }
 
     public String mint(ChaincodeStub stub, MsgMintNFT msg) {
-        NFT nft = new NFT(stub, String.valueOf(FabNFTManager.tokenCounts), msg.getHash(), msg.getUri());
-        FabNFTManager.increaseTokenCounts();
+        NFT nft = new NFT(stub, String.valueOf(HFNFTMP.tokenCounts), msg.getHash(), msg.getUri());
+        HFNFTMP.increaseTokenCounts();
 
         return nft.stringNFTJSON();
     }
