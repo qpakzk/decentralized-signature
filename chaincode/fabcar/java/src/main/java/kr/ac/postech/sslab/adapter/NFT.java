@@ -5,10 +5,16 @@ import org.json.simple.parser.ParseException;
 
 public class NFT implements INFT {
     private NFTAdapter adapter;
+    private String type;
 
     @Override
     public void mint(ChaincodeStub stub, String id, String owner, String uri) throws Throwable {
-        adapter = new NFTAdapter(id.substring(0, 2));
+        if(id.charAt(1) != '_') {
+            throw new Throwable("ID format is wrong");
+        }
+
+        this.type = id.substring(0, 1);
+        adapter = new NFTAdapter(this.type);
         adapter.mint(stub, id, owner, uri);
     }
 

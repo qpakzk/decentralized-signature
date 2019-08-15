@@ -12,19 +12,19 @@ public class NFTAdapter implements INFT {
  
     public NFTAdapter(String type) throws Throwable {
         switch (type) {
-            case "b_":
+            case "b":
                 nft = new BaseNFT();
                 break;
 
-            case "d_":
+            case "d":
                 nft = new DocNFT();
                 break;
 
-            case "s_":
+            case "s":
                 nft = new SigNFT();
                 break;
 
-            case "o_":
+            case "o":
                 nft = new OwnerNFT();
                 break;
 
