@@ -1,8 +1,5 @@
 package kr.ac.postech.sslab.standard;
 
-import kr.ac.postech.sslab.msg_type.MsgEditNFTMetadata;
-import kr.ac.postech.sslab.msg_type.MsgTransferNFT;
-
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
@@ -10,24 +7,19 @@ import org.hyperledger.fabric.shim.ResponseUtils;
 import java.util.List;
 
 public class ERC721 extends ChaincodeBase implements IERC721 {
+	private HFNFTMP protocol;
+
+	public ERC721() {
+		this.protocol = new HFNFTMP();
+	}
+
+	public ERC721(HFNFTMP protocol) {
+		this.protocol = protocol;
+	}
+
 	@Override
 	public Response init(ChaincodeStub stub) {
-        try {
-            String func = stub.getFunction();
-
-            if (!func.equals("init")) {
-            	throw new Throwable("Method other than init is not supported");
-            }
-
-            List<String> args = stub.getParameters();
-            if (args.size() != 0) {
-            	throw new Throwable("Incorrect number of arguments. Expecting 0");
-            }
-
-            return ResponseUtils.newSuccessResponse();
-        } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
-        }
+		return this.protocol.init(stub);
 	}
 	
     @Override
@@ -70,146 +62,37 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 	@Override
 	public Response balanceOf(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
-			}
-
-			String _owner = args.get(0);
-
-			long balance = HFNFTMP.queryNumberOfNFTs(stub, _owner);
-
-			return ResponseUtils.newSuccessResponse(String.valueOf(balance));
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.queryOwnedTokensCount(stub, args);
 	}
 
 	@Override
 	public Response ownerOf(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
-			}
-
-			String _tokenId = args.get(0);
-
-			String owner = HFNFTMP.queryOwner(stub, _tokenId);
-			if (owner == null) {
-				throw new Throwable(String.format("No such a NFT that has id %s", _tokenId));
-			}
-
-			return ResponseUtils.newSuccessResponse(owner);
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.queryOwner(stub, args);
 	}
 
 	@Override
 	public Response transferFrom(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 3) {
-				throw new Throwable("Incorrect number of arguments. Expecting 3");
-			}
-
-			String _from = args.get(0);
-			String _to = args.get(1);
-			String _tokenId = args.get(2);
-
-			MsgTransferNFT msg = new MsgTransferNFT(_from, _to, _tokenId);
-
-
-			HFNFTMP.transfer(stub, msg);
-			return ResponseUtils.newSuccessResponse();
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.transfer(stub, args);
 	}
 
 	@Override
 	public Response approve(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
-			}
-
-			String _approved = args.get(0);
-			String _tokenId = args.get(1);
-
-			MsgEditNFTMetadata msg = new MsgEditNFTMetadata(_approved, _tokenId);
-			HFNFTMP.edit(stub, msg);
-
-			return ResponseUtils.newSuccessResponse();
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.approve(stub, args);
 	}
 	
 	@Override
 	public Response setApprovalForAll(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
-			}
-
-			String _operator = args.get(0);
-			boolean _approved = Boolean.valueOf(args.get(1));
-
-			byte[] _creator = stub.getCreator();
-			String creator = String.valueOf(_creator);
-
-			return ResponseUtils.newSuccessResponse();
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.setOperator(stub, args);
 	}
 
 	@Override
     public Response getApproved(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
-			}
-
-			String _tokenId = args.get(0);
-			String operator = HFNFTMP.queryOperator(stub, _tokenId);
-
-			if (operator == null) {
-				throw new Throwable(String.format("Invalid NFT %s", _tokenId));
-			}
-
-			return ResponseUtils.newSuccessResponse(operator);
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.queryApproved(stub, args);
 	}
 
 	@Override
 	public Response isApprovedForAll(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
-			}
-
-			String _owner = args.get(0);
-			String _operator = args.get(1);
-
-			List<String> nftIds = HFNFTMP.queryIDsByOwner(stub, _owner);
-
-			if (nftIds == null) {
-				return ResponseUtils.newSuccessResponse("false");
-			}
-
-			for (String id : nftIds) {
-				if(id.equals(_operator)) {
-					return ResponseUtils.newSuccessResponse("true");
-				}
-			}
-
-			return ResponseUtils.newSuccessResponse("false");
-		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
-		}
+		return this.protocol.isOperatorForOwner(stub, args);
 	}
 
 	public static void main(String[] args) {
