@@ -1,7 +1,6 @@
 package kr.ac.postech.sslab.adapter;
 
 import kr.ac.postech.sslab.nft.*;
-import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.json.simple.parser.ParseException;
 
 public class XAttAdapter implements IXAtt {
@@ -17,7 +16,12 @@ public class XAttAdapter implements IXAtt {
                 this.type = new Signature(xatt);
                 break;
 
+            case "base":
+                this.type = new Base();
+                break;
+
             default:
+                this.type = null;
                 break;
         }
     }

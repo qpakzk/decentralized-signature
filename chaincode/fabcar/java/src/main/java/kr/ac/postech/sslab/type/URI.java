@@ -13,7 +13,13 @@ public class URI {
     private String hash;
 
     public URI(String uri) throws ParseException {
-        this.parse(uri);
+        if (uri.equals("")) {
+            this.path = "";
+            this.hash = "";
+        }
+        else {
+            this.parse(uri);
+        }
     }
 
     private void parse(String uri) throws ParseException {
@@ -24,17 +30,13 @@ public class URI {
         this.hash = object.get("hash").toString();
     }
 
-    private Map<String, String> toMap() {
+    public String toJSONString() {
         Map<String, String> map = new HashMap<>();
 
         map.put("path", this.path);
         map.put("hash", this.hash);
 
-        return map;
-    }
-
-    public String toJSONString() {
-        return new JSONObject(this.toMap()).toJSONString();
+        return new JSONObject(map).toJSONString();
     }
 
     public void setPath(String path) {
