@@ -61,8 +61,8 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				case "updateUri":
 					return this.updateUri(stub, args);
 
-				case "queryToken":
-					return this.queryToken(stub, args);
+				case "query":
+					return this.query(stub, args);
 
 				case "queryHistory":
 					return this.queryHistory(stub, args);
@@ -110,7 +110,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0);
+			String _id = args.get(0).toLowerCase();
 
 			BaseNFT nft = BaseNFT.read(stub, _id);
 
@@ -132,7 +132,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0);
+			String _id = args.get(0).toLowerCase();
 
 			BaseNFT nft = BaseNFT.read(stub, _id);
 
@@ -153,8 +153,8 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
 			}
 
-			String _xatt = args.get(0);
-			String _id = args.get(1);
+			String _xatt = args.get(0).toLowerCase();
+			String _id = args.get(1).toLowerCase();
 
 			BaseNFT nft = BaseNFT.read(stub, _id);
 			nft.setXAtt(stub, new XAtt(_xatt, nft.getType()));
@@ -172,8 +172,8 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
 			}
 
-			String _uri = args.get(0);
-			String _id = args.get(1);
+			String _uri = args.get(0).toLowerCase();
+			String _id = args.get(1).toLowerCase();
 
 			BaseNFT nft = BaseNFT.read(stub, _id);
 			nft.setXAtt(stub, new XAtt(_uri, nft.getType()));
@@ -185,13 +185,13 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 	@Override
-    public Response queryToken(ChaincodeStub stub, List<String> args) {
+    public Response query(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0);
+			String _id = args.get(0).toLowerCase();
 
 			BaseNFT nft = BaseNFT.read(stub, _id);
 			Map<String, String> map = new HashMap<>();
@@ -216,7 +216,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0);
+			String _id = args.get(0).toLowerCase();
 
 			List<String> history = new LinkedList<>();
 			QueryResultsIterator<KeyModification> resultsIterator = stub.getHistoryForKey(_id);

@@ -53,7 +53,7 @@ public class BaseNFT {
         String _id = object.get("id").toString();
         String _type = object.get("type").toString();
         String _owner = object.get("owner").toString();
-        Operator _operator = Operator.toList(object.get("operators").toString());
+        Operator _operator = Operator.toList(object.get("operator").toString());
         String _approved = object.get("approved").toString();
         XAtt _xatt = new XAtt(object.get("xatt").toString(), _type);
         URI _uri = new URI(object.get("uri").toString());
