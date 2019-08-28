@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
-public class BaseNFT {
+public class NFT {
     private String id;
     private String type;
     private String owner;
@@ -19,9 +19,9 @@ public class BaseNFT {
     private XAtt xatt;
     private URI uri;
 
-    public BaseNFT() {}
+    public NFT() {}
 
-    private BaseNFT(String id, String type, String owner, Operator operator, String approved, XAtt xatt, URI uri) {
+    private NFT(String id, String type, String owner, Operator operator, String approved, XAtt xatt, URI uri) {
         this.id = id;
         this.type = type;
         this.owner = owner;
@@ -47,7 +47,7 @@ public class BaseNFT {
         stub.delState(tokenId);
     }
 
-    public static BaseNFT read(ChaincodeStub stub, String id) throws ParseException {
+    public static NFT read(ChaincodeStub stub, String id) throws ParseException {
         JSONObject object = (JSONObject) new JSONParser().parse(stub.getStringState(id));
 
         String _id = object.get("id").toString();
@@ -58,7 +58,7 @@ public class BaseNFT {
         XAtt _xatt = new XAtt(object.get("xatt").toString(), _type);
         URI _uri = new URI(object.get("uri").toString());
 
-        return new BaseNFT(_id, _type, _owner, _operator, _approved, _xatt, _uri);
+        return new NFT(_id, _type, _owner, _operator, _approved, _xatt, _uri);
     }
 
     public String getId() {
@@ -114,7 +114,11 @@ public class BaseNFT {
         return this.uri;
     }
 
-    private Map<String, String> toMap() {
+    public boolean checker() {
+        return this.xatt.checker();
+    }
+
+    private String toJSONString() {
         Map<String, String> map = new HashMap<>();
         map.put("id", this.id);
         map.put("type", this.type);
@@ -124,10 +128,6 @@ public class BaseNFT {
         map.put("xatt", this.xatt.toJSONString());
         map.put("uri", this.uri.toJSONString());
 
-        return map;
-    }
-
-    private String toJSONString() {
-        return new JSONObject(this.toMap()).toJSONString();
+        return new JSONObject(map).toJSONString();
     }
 }
