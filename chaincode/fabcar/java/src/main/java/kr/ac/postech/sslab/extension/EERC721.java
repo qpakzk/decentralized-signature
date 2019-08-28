@@ -1,7 +1,7 @@
 package kr.ac.postech.sslab.extension;
 
 import kr.ac.postech.sslab.adapter.XAtt;
-import kr.ac.postech.sslab.nft.BaseNFT;
+import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
@@ -14,6 +14,8 @@ import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+import javax.xml.ws.Response;
 
 public class EERC721 extends ERC721 implements IEERC721 {
 	@Override
@@ -55,14 +57,20 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				case "divide":
 					return this.divide(stub, args);
 
-				case "delete":
-					return this.delete(stub, args);
+				case "deactivate":
+					return this.deactivate(stub, args);
 
-				case "updateXAtt":
-					return this.updateXAtt(stub, args);
+				case "setXAtt":
+					return this.setXAtt(stub, args);
 
-				case "updateUri":
-					return this.updateUri(stub, args);
+				case "getXAtt":
+					return this.getXAtt(stub, args);
+
+				case "setUri":
+					return this.setXAtt(stub, args);
+
+				case "getUri":
+					return this.getXAtt(stub, args);
 
 				case "query":
 					return this.query(stub, args);
@@ -121,7 +129,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 		QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
 		while(resultsIterator.iterator().hasNext()) {
 			String id = resultsIterator.iterator().next().getKey();
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
 
 			if (nft.getType().equals(type)) {
 				ownedTokensCount++;
@@ -150,7 +158,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			*/
 
-			BaseNFT nft = new BaseNFT();
+			NFT nft = new NFT();
 			nft.mint(stub, id, type, owner, xatt, uri);
 
 			return ResponseUtils.newSuccessResponse("Succeeded mint");
@@ -176,9 +184,13 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			*/
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
 
-			BaseNFT dupNft = new BaseNFT();
+			if (!nft.checker()) {
+				throw new Throwable("Cannot transfer");
+			}
+
+			NFT dupNft = new NFT();
 			dupNft.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getXAtt().toJSONString(), nft.getUri().toJSONString());
 			dupNft.setOperator(stub, nft.getOperator());
 			dupNft.setApproved(stub, nft.getApproved());
@@ -190,7 +202,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 	@Override
-    public Response delete(ChaincodeStub stub, List<String> args) {
+    public Response deactivate(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
@@ -205,7 +217,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			*/
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
 
 			XAtt xatt = nft.getXAtt();
 			xatt.deactivate();
@@ -218,7 +230,26 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 	@Override
-    public Response updateXAtt(ChaincodeStub stub, List<String> args) {
+	public Response getXAtt(ChaincodeStub stub, List<String> args) {
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
+
+			String id = args.get(0).toLowerCase();
+
+			NFT nft = NFT.read(stub, id);
+
+			XAtt xatt = nft.getXAtt();
+
+			return ResponseUtils.newSuccessResponse(xatt.toJSONString());
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
+		}
+	}
+
+	@Override
+	public Response setXAtt(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 2) {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
@@ -234,7 +265,12 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			*/
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
+
+			if (!nft.checker()) {
+				throw new Throwable("Cannot setXAtt");
+			}
+
 			nft.setXAtt(stub, new XAtt(xatt, nft.getType()));
 
 			return ResponseUtils.newSuccessResponse();
@@ -244,7 +280,26 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 	@Override
-	public Response updateUri(ChaincodeStub stub, List<String> args) {
+	public Response getUri(ChaincodeStub stub, List<String> args) {
+		try {
+			if (args.size() != 1) {
+				throw new Throwable("Incorrect number of arguments. Expecting 1");
+			}
+
+			String id = args.get(0).toLowerCase();
+
+			NFT nft = NFT.read(stub, id);
+
+			URI uri = nft.getUri();
+
+			return ResponseUtils.newSuccessResponse(uri.toJSONString());
+		} catch (Throwable throwable) {
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
+		}
+	}
+
+	@Override
+	public Response setUri(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 2) {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
@@ -260,7 +315,12 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			*/
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
+
+			if (!nft.checker()) {
+				throw new Throwable("Cannot setUri");
+			}
+
 			nft.setUri(stub, new URI(uri));
 
 			return ResponseUtils.newSuccessResponse();
@@ -278,9 +338,10 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String id = args.get(0).toLowerCase();
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
 			Map<String, String> map = new HashMap<>();
 			map.put("id", nft.getId());
+			map.put("type", nft.getType());
 			map.put("owner", nft.getOwner());
 			map.put("operator", nft.getOperator().toString());
 			map.put("approved", nft.getApproved());
@@ -321,6 +382,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 
+	@Override
 	public Response burn(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
@@ -329,7 +391,14 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String id = args.get(0).toLowerCase();
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			/*
+			String owner = this._ownerOf(stub, id);
+			if (!owner.equals(msg.sender) && !this._isApprovedForAll(stub, owner, msg.sender)) {
+				throw new Throwable("Caller is not owner nor approved for all");
+			}
+			*/
+
+			NFT nft = NFT.read(stub, id);
 			nft.burn(stub, id);
 
 			return ResponseUtils.newSuccessResponse();
