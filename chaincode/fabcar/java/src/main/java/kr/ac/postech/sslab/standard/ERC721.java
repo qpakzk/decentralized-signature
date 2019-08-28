@@ -1,6 +1,6 @@
 package kr.ac.postech.sslab.standard;
 
-import kr.ac.postech.sslab.nft.BaseNFT;
+import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
@@ -124,7 +124,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 	}
 
 	protected String _ownerOf(ChaincodeStub stub, String id) throws ParseException {
-		BaseNFT nft = BaseNFT.read(stub, id);
+		NFT nft = NFT.read(stub, id);
 		return nft.getOwner();
 	}
 
@@ -151,7 +151,11 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect token id");
 			}
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
+
+			if (!nft.checker()) {
+				throw new Throwable("Cannot transfer");
+			}
 
 			/*
 			if (!this._isApprovedOrOwner(stub, msg.sender, id)) {
@@ -192,7 +196,11 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String approved = args.get(0).toLowerCase();
 			String id = args.get(1).toLowerCase();
 
-			BaseNFT nft = BaseNFT.read(stub, id);
+			NFT nft = NFT.read(stub, id);
+
+			if (!nft.checker()) {
+				throw new Throwable("Cannot approve");
+			}
 
 			/*
 			String owner = this._ownerOf(stub, id);
@@ -231,14 +239,24 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			if (approved) {
 				while(resultsIterator.iterator().hasNext()) {
 					String id = resultsIterator.iterator().next().getKey();
-					BaseNFT nft = BaseNFT.read(stub, id);
+					NFT nft = NFT.read(stub, id);
+
+					if (!nft.checker()) {
+						throw new Throwable("Cannot call setApprovalForAll");
+					}
+
 					nft.setOperator(stub, nft.getOperator().add(operator));
 				}
 			}
 			else {
 				while(resultsIterator.iterator().hasNext()) {
 					String id = resultsIterator.iterator().next().getKey();
-					BaseNFT nft = BaseNFT.read(stub, id);
+					NFT nft = NFT.read(stub, id);
+
+					if (!nft.checker()) {
+						throw new Throwable("Cannot call setApprovalForAll");
+					}
+
 					nft.setOperator(stub, nft.getOperator().remove(operator));
 				}
 			}
@@ -267,7 +285,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 	}
 
 	protected String _getApproved(ChaincodeStub stub, String id) throws ParseException {
-		BaseNFT nft = BaseNFT.read(stub, id);
+		NFT nft = NFT.read(stub, id);
 
 		return nft.getApproved();
 	}
@@ -296,8 +314,8 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 
 		while(resultsIterator.iterator().hasNext()) {
 			String id = resultsIterator.iterator().next().getKey();
-			BaseNFT nft = BaseNFT.read(stub, id);
-			if(!operator.equals(nft.getOperator().toString())) {
+			NFT nft = NFT.read(stub, id);
+			if(!nft.getOperator().existOperator(operator)) {
 				return false;
 			}
 		}
