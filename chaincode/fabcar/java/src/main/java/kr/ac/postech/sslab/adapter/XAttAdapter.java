@@ -34,8 +34,28 @@ public class XAttAdapter implements IXAtt {
         return this.type.toJSONString();
     }
 
+    boolean isActivated() {
+        switch (this.type.getType()) {
+            case "doc":
+                return ((Document) this.type).isActivated();
+
+            case "sig":
+                return ((Signature) this.type).isActivated();
+        }
+
+        return true;
+    }
+
     @Override
     public void deactivate() {
-        this.type.deactivate();
+        switch (this.type.getType()) {
+            case "doc":
+                ((Document) this.type).deactivate();
+                break;
+
+            case "sig":
+                ((Signature) this.type).deactivate();
+                break;
+        }
     }
  }

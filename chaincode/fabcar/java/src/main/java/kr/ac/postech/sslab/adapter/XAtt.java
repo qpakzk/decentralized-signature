@@ -18,4 +18,8 @@ public class XAtt implements IXAtt {
     public void deactivate() {
         this.adapter.deactivate();
     }
+
+    public boolean checker() {
+        return this.adapter.isActivated();
+    }
  }
