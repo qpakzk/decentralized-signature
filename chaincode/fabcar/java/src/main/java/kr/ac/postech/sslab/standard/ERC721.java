@@ -1,18 +1,13 @@
 package kr.ac.postech.sslab.standard;
 
-import kr.ac.postech.sslab.nft.Base;
 import kr.ac.postech.sslab.nft.BaseNFT;
 import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ERC721 extends ChaincodeBase implements IERC721 {
 	@Override
@@ -21,7 +16,7 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 			String func = stub.getFunction();
 
 			if (!func.equals("init")) {
-				throw new Throwable("Method other than 'init' is not supported");
+				throw new Throwable("Functions other than init are not supported");
 			}
 
 			List<String> args = stub.getParameters();
@@ -80,14 +75,13 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1.");
 			}
 
-			String _owner = args.get(0).toLowerCase();
+			String owner = args.get(0).toLowerCase();
 
-			if (_owner.length() == 0) {
-				throw new Throwable("Incorrect owner.");
+			if (owner.length() == 0) {
+				throw new Throwable("Incorrect owner");
 			}
 
-
-			long ownedTokensCount = _balanceOf(stub, _owner);
+			long ownedTokensCount = this._balanceOf(stub, owner);
 
 			return ResponseUtils.newSuccessResponse(Long.toString(ownedTokensCount));
 		} catch (Throwable throwable) {
@@ -115,13 +109,13 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0).toLowerCase();
+			String id = args.get(0).toLowerCase();
 
-			if (_id.length() == 0) {
+			if (id.length() == 0) {
 				throw new Throwable("Incorrect token id");
 			}
 
-			String owner = _ownerOf(stub, _id);
+			String owner = this._ownerOf(stub, id);
 
 			return ResponseUtils.newSuccessResponse(owner);
 		} catch (Throwable throwable) {
@@ -129,8 +123,8 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		}
 	}
 
-	private String _ownerOf(ChaincodeStub stub, String _id) throws ParseException {
-		BaseNFT nft = BaseNFT.read(stub, _id);
+	protected String _ownerOf(ChaincodeStub stub, String id) throws ParseException {
+		BaseNFT nft = BaseNFT.read(stub, id);
 		return nft.getOwner();
 	}
 
@@ -141,48 +135,47 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 3");
 			}
 
-			String _from = args.get(0).toLowerCase();
-			String _to = args.get(1).toLowerCase();
-			String _id = args.get(2).toLowerCase();
+			String from = args.get(0).toLowerCase();
+			String to = args.get(1).toLowerCase();
+			String id = args.get(2).toLowerCase();
 
-			if (_from.length() == 0) {
+			if (from.length() == 0) {
 				throw new Throwable("Incorrect sender");
 			}
 
-			if (_to.length() == 0) {
+			if (to.length() == 0) {
 				throw new Throwable("Incorrect recipient");
 			}
 
-			if (_id.length() == 0) {
+			if (id.length() == 0) {
 				throw new Throwable("Incorrect token id");
 			}
 
-			_transferFrom(stub, _from, _to, _id);
+			BaseNFT nft = BaseNFT.read(stub, id);
 
-			return ResponseUtils.newSuccessResponse();
+			/*
+			if (!this._isApprovedOrOwner(stub, msg.sender, id)) {
+				throw new Throwable("You should be owner or approved");
+			}
+			*/
+
+			if (!from.equals(nft.getOwner())) {
+				throw new Throwable("Transfer of token that is not own");
+			}
+
+			nft.setOwner(stub, to);
+
+			return ResponseUtils.newSuccessResponse("Succeeded transferFrom");
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 
-	private void _transferFrom(ChaincodeStub stub, String _from, String _to, String _id) throws Throwable {
-		BaseNFT nft = BaseNFT.read(stub, _id);
+	protected boolean _isApprovedOrOwner(ChaincodeStub stub, String spender, String id) throws ParseException {
+		String owner = this._ownerOf(stub, id);
+		String approved = this._getApproved(stub, id);
 
-
-		//isApprovedForAll(stub, msg.sender, _id);
-
-		if (!_from.equals(nft.getOwner())) {
-			throw new Throwable("transfer error");
-		}
-
-		nft.setOwner(stub, _to);
-	}
-
-	private boolean isApprovedOrOwner(ChaincodeStub stub, String _spender, String _id) throws ParseException {
-		String _owner = _ownerOf(stub, _id);
-		String _approved = _getApproved(stub, _id);
-
-		if (_spender.equals(_owner) || _spender.equals(_approved) || _isApprovedForAll(stub, _owner, _spender)) {
+		if (spender.equals(owner) || spender.equals(approved) || this._isApprovedForAll(stub, owner, spender)) {
 			return true;
 		}
 
@@ -196,57 +189,63 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
 			}
 
-			String _approved = args.get(0).toLowerCase();
-			String _id = args.get(1).toLowerCase();
+			String approved = args.get(0).toLowerCase();
+			String id = args.get(1).toLowerCase();
 
-			BaseNFT nft = BaseNFT.read(stub, _id);
+			BaseNFT nft = BaseNFT.read(stub, id);
 
-			//String _owner = _ownerOf(stub, _id);
-			//msg.sender == _owner || _isApprovedForAll(stub, _owner, msg.sender);
+			/*
+			String owner = this._ownerOf(stub, id);
+			if (!owner.equals(msg.sender) && !this._isApprovedForAll(stub, owner, msg.sender)) {
+				throw new Throwable("Approve caller is not owner nor approved for all");
+			}
+			*/
 
-			nft.setApproved(stub, _approved);
+			nft.setApproved(stub, approved);
 
-			return ResponseUtils.newSuccessResponse();
+			return ResponseUtils.newSuccessResponse("Succeeded approve");
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse("HFNFTMP approve error");
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 	
 	@Override
 	public Response setApprovalForAll(ChaincodeStub stub, List<String> args) {
 		try {
+			//should be modified as 2 arguments
 			if (args.size() != 3) {
 				throw new Throwable("Incorrect number of arguments. Expecting 3");
 			}
 
-			String _owner = args.get(0).toLowerCase();
-			String _operator = args.get(1).toLowerCase();
-			boolean _approved = Boolean.parseBoolean(args.get(2));
+			//user should be deleted
+			String caller = args.get(0).toLowerCase();
+			String operator = args.get(1).toLowerCase();
+			boolean approved = Boolean.parseBoolean(args.get(2));
 
-			if (_owner.equals(_operator)) {
-				throw new Throwable("setApprovalForAll error");
+			if (operator.equals(caller)) {
+				throw new Throwable("Approve to caller");
 			}
 
-			String query = "{\"selector\":{\"owner\":\"" + _owner + "\"}}";
+			String query = "{\"selector\":{\"owner\":\"" + caller + "\"}}";
 			QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
-			if (_approved) {
+			if (approved) {
 				while(resultsIterator.iterator().hasNext()) {
 					String id = resultsIterator.iterator().next().getKey();
 					BaseNFT nft = BaseNFT.read(stub, id);
-					nft.setOperator(stub, nft.getOperator().add(_operator));
+					nft.setOperator(stub, nft.getOperator().add(operator));
 				}
 			}
 			else {
 				while(resultsIterator.iterator().hasNext()) {
 					String id = resultsIterator.iterator().next().getKey();
 					BaseNFT nft = BaseNFT.read(stub, id);
-					nft.setOperator(stub, nft.getOperator().remove(_operator));
+					nft.setOperator(stub, nft.getOperator().remove(operator));
 				}
 			}
 
-			return ResponseUtils.newSuccessResponse();
+			return ResponseUtils.newSuccessResponse("Succeeded setApprovalForAll");
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse("HFNFTMP approve error");
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -257,9 +256,9 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 1");
 			}
 
-			String _id = args.get(0).toLowerCase();
+			String id = args.get(0).toLowerCase();
 
-			String approved = _getApproved(stub, _id);
+			String approved = this._getApproved(stub, id);
 
 			return ResponseUtils.newSuccessResponse(approved);
 		} catch (Throwable throwable) {
@@ -267,8 +266,8 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 		}
 	}
 
-	private String _getApproved(ChaincodeStub stub, String _id) throws ParseException {
-		BaseNFT nft = BaseNFT.read(stub, _id);
+	protected String _getApproved(ChaincodeStub stub, String id) throws ParseException {
+		BaseNFT nft = BaseNFT.read(stub, id);
 
 		return nft.getApproved();
 	}
@@ -280,25 +279,25 @@ public class ERC721 extends ChaincodeBase implements IERC721 {
 				throw new Throwable("Incorrect number of arguments. Expecting 2");
 			}
 
-			String _owner = args.get(0).toLowerCase();
-			String _operator = args.get(1).toLowerCase();
+			String owner = args.get(0).toLowerCase();
+			String operator = args.get(1).toLowerCase();
 
-			boolean _result = _isApprovedForAll(stub, _owner, _operator);
+			boolean result = this._isApprovedForAll(stub, owner, operator);
 
-			return ResponseUtils.newSuccessResponse(Boolean.toString(_result));
+			return ResponseUtils.newSuccessResponse(Boolean.toString(result));
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse("isApprovedForAll error");
+			return ResponseUtils.newErrorResponse(throwable.getMessage());
 		}
 	}
 
-	private boolean _isApprovedForAll(ChaincodeStub stub, String _owner, String _operator) throws ParseException {
-		String query = "{\"selector\":{\"owner\":\"" + _owner + "\"}}";
+	protected boolean _isApprovedForAll(ChaincodeStub stub, String owner, String operator) throws ParseException {
+		String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
 		QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
 
 		while(resultsIterator.iterator().hasNext()) {
 			String id = resultsIterator.iterator().next().getKey();
 			BaseNFT nft = BaseNFT.read(stub, id);
-			if(!_operator.equals(nft.getOperator().toString())) {
+			if(!operator.equals(nft.getOperator().toString())) {
 				return false;
 			}
 		}
