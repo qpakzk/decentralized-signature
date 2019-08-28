@@ -1,6 +1,5 @@
-package kr.ac.postech.sslab.nft;
+package kr.ac.postech.sslab.type;
 
-import kr.ac.postech.sslab.adapter.IType;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

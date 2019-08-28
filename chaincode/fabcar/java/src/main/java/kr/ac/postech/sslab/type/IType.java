@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab.adapter;
+package kr.ac.postech.sslab.type;
 
 public interface IType {
     String toJSONString();

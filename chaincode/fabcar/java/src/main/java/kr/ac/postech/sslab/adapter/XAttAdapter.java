@@ -1,6 +1,9 @@
 package kr.ac.postech.sslab.adapter;
 
-import kr.ac.postech.sslab.nft.*;
+import kr.ac.postech.sslab.type.Base;
+import kr.ac.postech.sslab.type.IType;
+import kr.ac.postech.sslab.type.Document;
+import kr.ac.postech.sslab.type.Signature;
 import org.json.simple.parser.ParseException;
 
 public class XAttAdapter implements IXAtt {

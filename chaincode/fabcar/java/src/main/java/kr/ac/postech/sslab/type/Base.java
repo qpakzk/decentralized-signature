@@ -1,6 +1,4 @@
-package kr.ac.postech.sslab.nft;
-
-import kr.ac.postech.sslab.adapter.IType;
+package kr.ac.postech.sslab.type;
 
 public class Base implements IType {
     @Override
