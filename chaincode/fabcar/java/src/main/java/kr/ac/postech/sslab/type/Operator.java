@@ -21,8 +21,7 @@ public class Operator {
 
         if(this.operators.size() > 0) {
             for (String operator : this.operators) {
-                result += operator;
-                result += ",";
+                result += (operator + ",");
             }
 
             result = result.substring(0, result.length() - 1);
@@ -36,12 +35,24 @@ public class Operator {
     }
 
     public Operator add(String operator) {
-        this.operators.add(operator);
+        if (!existOperator(operator)) {
+            this.operators.add(operator);
+        }
         return new Operator(this.operators);
     }
 
     public Operator remove(String operator) {
         this.operators.remove(operator);
         return new Operator(this.operators);
+    }
+
+    public boolean existOperator(String inputOperator) {
+        for (String operator : this.operators) {
+            if (operator.equals(inputOperator)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

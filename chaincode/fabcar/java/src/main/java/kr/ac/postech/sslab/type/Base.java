@@ -1,13 +1,23 @@
 package kr.ac.postech.sslab.type;
 
 public class Base implements IType {
-    @Override
-    public String toJSONString() {
-        return "";
+    private String type;
+
+    public Base() {
+        this.type = "base";
+    }
+
+    Base(String type) {
+        this.type = type;
     }
 
     @Override
-    public void deactivate() {
+    public String getType() {
+        return this.type;
+    }
 
+    @Override
+    public String toJSONString() {
+        return "";
     }
 }

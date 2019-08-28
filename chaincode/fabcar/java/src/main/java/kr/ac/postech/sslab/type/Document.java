@@ -6,37 +6,22 @@ import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
-public class Document implements IType {
+public class Document extends Base {
     private String hash;
     private List<String> signers;
     private List<String> signatures;
     private boolean activated;
-    private boolean freezed;
 
     public Document(String xatt) throws ParseException {
-        this.parse(xatt);
-    }
+        super("doc");
 
-    private void parse(String xatt) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject object = (JSONObject) parser.parse(xatt);
 
         this.hash = object.get("hash").toString();
         this.signers = this.toList(object.get("signers").toString());
         this.signatures = this.toList(object.get("signatures").toString());
-        this.activated = Boolean.parseBoolean(object.get("activated").toString());
-        this.freezed = Boolean.parseBoolean(object.get("freezed").toString());
-    }
-
-    private Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("hash", this.hash);
-        map.put("signers", this.toString(signers));
-        map.put("signatures", this.toString(signatures));
-        map.put("activated", Boolean.toString(this.activated));
-        map.put("freezed", Boolean.toString(this.freezed));
-
-        return map;
+        this.activated = true;
     }
 
     private String toString(List<String> list) {
@@ -44,7 +29,7 @@ public class Document implements IType {
 
         if (list.size() > 0) {
             for (String item : list) {
-                result = result + item + ",";
+                result += (item + ",");
             }
 
             result = result.substring(0, result.length() - 1);
@@ -53,17 +38,19 @@ public class Document implements IType {
         return result;
     }
 
-    public List<String> toList(String string) {
+    private List<String> toList(String string) {
         return new ArrayList<>(Arrays.asList(string.split(",")));
     }
 
     @Override
     public String toJSONString() {
-        return new JSONObject(this.toMap()).toJSONString();
-    }
+        Map<String, String> map = new HashMap<>();
+        map.put("hash", this.hash);
+        map.put("signers", this.toString(signers));
+        map.put("signatures", this.toString(signatures));
+        map.put("activated", Boolean.toString(this.activated));
 
-    public void setHash(String hash) {
-        this.hash = hash;
+        return new JSONObject(map).toJSONString();
     }
 
     public String getHash() {
@@ -90,7 +77,7 @@ public class Document implements IType {
         this.activated = false;
     }
 
-    public void freeze() {
-        this.freezed = true;
+    public boolean isActivated() {
+        return this.activated;
     }
 }
