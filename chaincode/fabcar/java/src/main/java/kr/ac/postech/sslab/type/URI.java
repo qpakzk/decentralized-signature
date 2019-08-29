@@ -18,16 +18,12 @@ public class URI {
             this.hash = "";
         }
         else {
-            this.parse(uri);
+            JSONParser parser = new JSONParser();
+            JSONObject object = (JSONObject) parser.parse(uri);
+
+            this.path = object.get("path").toString();
+            this.hash = object.get("hash").toString();
         }
-    }
-
-    private void parse(String uri) throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject object = (JSONObject) parser.parse(uri);
-
-        this.path = object.get("path").toString();
-        this.hash = object.get("hash").toString();
     }
 
     public String toJSONString() {
