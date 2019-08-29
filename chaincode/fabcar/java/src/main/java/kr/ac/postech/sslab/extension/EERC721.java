@@ -67,10 +67,10 @@ public class EERC721 extends ERC721 implements IEERC721 {
 					return this.getXAtt(stub, args);
 
 				case "setUri":
-					return this.setXAtt(stub, args);
+					return this.setUri(stub, args);
 
 				case "getUri":
-					return this.getXAtt(stub, args);
+					return this.getUri(stub, args);
 
 				case "query":
 					return this.query(stub, args);
