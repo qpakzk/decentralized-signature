@@ -12,18 +12,16 @@ public class URI {
     private String path;
     private String hash;
 
-    public URI(String uri) throws ParseException {
-        if (uri.equals("")) {
-            this.path = "";
-            this.hash = "";
-        }
-        else {
-            JSONParser parser = new JSONParser();
-            JSONObject object = (JSONObject) parser.parse(uri);
+    public URI() {
+        this.path = "";
+        this.hash = "";
+    }
 
-            this.path = object.get("path").toString();
-            this.hash = object.get("hash").toString();
-        }
+    public URI(String uri) throws ParseException {
+        JSONObject object = (JSONObject) new JSONParser().parse(uri);
+
+        this.path = object.get("path").toString();
+        this.hash = object.get("hash").toString();
     }
 
     public String toJSONString() {
