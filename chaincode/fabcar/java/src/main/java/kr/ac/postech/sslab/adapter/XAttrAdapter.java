@@ -6,10 +6,10 @@ import kr.ac.postech.sslab.type.Document;
 import kr.ac.postech.sslab.type.Signature;
 import org.json.simple.parser.ParseException;
 
-public class XAttAdapter implements IXAtt {
+public class XAttrAdapter implements IXAttr {
     private IType type;
  
-    public XAttAdapter(String type, String xatt) throws ParseException {
+    XAttrAdapter(String type, String xatt) throws ParseException {
         switch (type) {
             case "doc":
                 this.type = new Document(xatt);
@@ -18,15 +18,11 @@ public class XAttAdapter implements IXAtt {
             case "sig":
                 this.type = new Signature(xatt);
                 break;
-
-            case "base":
-                this.type = new Base();
-                break;
-
-            default:
-                this.type = null;
-                break;
         }
+    }
+
+    XAttrAdapter(String type) {
+        this.type = new Base(type);
     }
 
     @Override
