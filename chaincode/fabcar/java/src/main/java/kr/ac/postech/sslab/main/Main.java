@@ -1,4 +1,4 @@
-package kr.ac.postech.sslab;
+package kr.ac.postech.sslab.main;
 
 import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.standard.ERC721;
@@ -62,9 +62,41 @@ public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
                 case "isApprovedForAll":
                     return this.isApprovedForAll(stub, args);
 
+                case "mint":
+                    return this.mint(stub, args);
+
+                case "burn":
+                    return this.burn(stub, args);
+
+                case "getType":
+                    return this.getType(stub, args);
+
+                case "setOwner":
+                    return this.setOwner(stub, args);
+
+                case "getOwner":
+                    return this.getOwner(stub, args);
+
+                case "setOperator":
+                    return this.setOperator(stub, args);
+
+                case "getOperator":
+                    return this.getOperator(stub, args);
+
+                case "setApprovee":
+                    return this.setApprovee(stub, args);
+
+                case "getApprovee":
+                    return this.getApprovee(stub, args);
+
+                case "setURI":
+                    return this.setURI(stub, args);
+
+                case  "getURI":
+                    return this.getURI(stub, args);
+
                 default:
-                    throw new Throwable("Invalid invoke method name. Expecting one of: "
-                            + "[\"balanceOf\", \"ownerOf\", \"transferFrom\", \"approve\", \"setApprovalForAll\", \"getApproved\", \"isApprovedForAll\"]");
+                    throw new Throwable("Invalid invoke method name");
             }
 
         } catch (Throwable throwable) {
@@ -109,6 +141,10 @@ public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
 
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
+        if (args.size() == 2) {
+            return this.erc721.mint(stub, args);
+        }
+
         return this.nft.mint(stub, args);
     }
 
@@ -117,30 +153,32 @@ public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
         return this.nft.burn(stub, args);
     }
 
-    public Response getId(ChaincodeStub stub, List<String> args) {
-        return this.nft.getId(stub, args);
-    }
-
+    @Override
     public Response getType(ChaincodeStub stub, List<String> args) {
        return this.nft.getType(stub, args);
     }
 
+    @Override
     public Response setOwner(ChaincodeStub stub, List<String> args) {
         return this.nft.setOwner(stub, args);
     }
 
+    @Override
     public Response getOwner(ChaincodeStub stub, List<String> args) {
         return this.nft.getOwner(stub, args);
     }
 
+    @Override
     public Response setOperator(ChaincodeStub stub, List<String> args) {
         return this.nft.setOperator(stub, args);
     }
 
+    @Override
     public Response getOperator(ChaincodeStub stub, List<String> args) {
         return this.nft.getOperator(stub, args);
     }
 
+    @Override
     public Response setApprovee(ChaincodeStub stub, List<String> args) {
         return this.nft.setApprovee(stub, args);
     }
@@ -149,17 +187,6 @@ public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
     public Response getApprovee(ChaincodeStub stub, List<String> args) {
         return this.nft.getApprovee(stub, args);
     }
-
-    @Override
-    public Response getXAtt(ChaincodeStub stub, List<String> args) {
-        return this.nft.getXAtt(stub, args);
-    }
-
-    @Override
-    public Response setXAtt(ChaincodeStub stub, List<String> args) {
-        return this.nft.setXAtt(stub, args);
-    }
-
 
     @Override
     public Response getURI(ChaincodeStub stub, List<String> args) {
