@@ -7,7 +7,7 @@ public class Base implements IType {
         this.type = "base";
     }
 
-    Base(String type) {
+    public Base(String type) {
         this.type = type;
     }
 
