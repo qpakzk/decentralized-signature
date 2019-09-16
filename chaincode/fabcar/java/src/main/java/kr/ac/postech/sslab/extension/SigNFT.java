@@ -12,35 +12,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class DocNFT extends BaseNFT implements IXNFT {
-    //write
+public class SigNFT extends BaseNFT implements IXNFT {
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
-            if (args.size() != 7) {
-                throw new Throwable("Incorrect number of arguments. Expecting 7");
+            if (args.size() != 6) {
+                throw new Throwable("Incorrect number of arguments. Expecting 6");
             }
 
             String id = args.get(0).toLowerCase();
             String type = args.get(1).toLowerCase();
             String owner = args.get(2).toLowerCase();
             String hash = args.get(3).toLowerCase();
-            String signers = args.get(4).toLowerCase();
 
             XAttr xattr = new XAttr();
             List<String> list = new ArrayList<>();
             list.add(type);
-
-
-            list.add(Long.toString(new Random().nextLong()));
             list.add(id);
-
+            list.add(Long.toString(new Random().nextLong()));
             list.add(hash);
-            list.add(signers);
 
             xattr.assign(list);
 
-            URI uri = new URI(args.get(5).toLowerCase(), args.get(6).toLowerCase());
+            URI uri = new URI(args.get(4).toLowerCase(), args.get(5).toLowerCase());
 
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
