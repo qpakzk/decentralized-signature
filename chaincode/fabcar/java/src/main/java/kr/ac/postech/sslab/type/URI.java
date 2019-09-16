@@ -17,11 +17,9 @@ public class URI {
         this.hash = "";
     }
 
-    public URI(String uri) throws ParseException {
-        JSONObject object = (JSONObject) new JSONParser().parse(uri);
-
-        this.path = object.get("path").toString();
-        this.hash = object.get("hash").toString();
+    public URI(String path, String hash) {
+        this.path = path;
+        this.hash = hash;
     }
 
     public String toJSONString() {
@@ -47,5 +45,11 @@ public class URI {
 
     public String getHash() {
         return this.hash;
+    }
+
+    public void parse(String uri) throws ParseException {
+        JSONObject object = (JSONObject) new JSONParser().parse(uri);
+        this.path = object.get("path").toString();
+        this.hash = object.get("hash").toString();
     }
 }
