@@ -1,27 +1,81 @@
 package kr.ac.postech.sslab.type;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
-public class Document extends Base {
+public class Document implements IType {
+    private String type;
+    private String id;
+    private String parentId;
     private String hash;
     private List<String> signers;
-    private List<String> signatures;
+    private List<String> sigIds;
     private boolean activated;
 
-    public Document(String xatt) throws ParseException {
-        super("doc");
+    /*
+    attr       | index
+    ==================
+    type       | 0
+    id         | 1
+    parentId   | 2
+    hash       | 3
+    signers    | 4
+    sigIds     | 5
+    activated  | 6
+    */
 
-        JSONParser parser = new JSONParser();
-        JSONObject object = (JSONObject) parser.parse(xatt);
-
-        this.hash = object.get("hash").toString();
-        this.signers = this.toList(object.get("signers").toString());
-        this.signatures = this.toList(object.get("signatures").toString());
+    @Override
+    public void assign(List<String> args) {
+        this.type = args.get(0);
+        this.id = args.get(1);
+        this.parentId = args.get(2);
+        this.hash = args.get(3);
+        this.signers = this.toList(args.get(4));
+        this.sigIds = new ArrayList<>();
         this.activated = true;
+    }
+
+    @Override
+    public void setXAttr(int index, String attr) {
+        switch (index) {
+            case 5:
+                this.sigIds.add(attr);
+                break;
+
+            case 6:
+                this.deactivate();
+                break;
+        }
+    }
+
+    @Override
+    public String getXAttr(int index) {
+        switch (index) {
+            case 0:
+                return this.type;
+
+            case 1:
+                return this.id;
+
+            case 2:
+                return this.parentId;
+
+            case 3:
+                return this.hash;
+
+            case 4:
+                return this.toString(this.signers);
+
+            case 5:
+                return this.toString(this.sigIds);
+
+            case 6:
+                return Boolean.toString(this.activated);
+        }
+
+        return null;
     }
 
     private String toString(List<String> list) {
@@ -43,41 +97,28 @@ public class Document extends Base {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String toJSONString() {
-        Map<String, String> map = new HashMap<>();
-        map.put("hash", this.hash);
-        map.put("signers", this.toString(signers));
-        map.put("signatures", this.toString(signatures));
-        map.put("activated", Boolean.toString(this.activated));
+        JSONObject object = new JSONObject();
+        object.put("type", this.type);
+        object.put("id", this.id);
+        object.put("parentId", this.parentId);
+        object.put("hash", this.hash);
 
-        return new JSONObject(map).toJSONString();
+        JSONArray signers = new JSONArray();
+        signers.addAll(this.signers);
+        object.put("signers", signers);
+
+        JSONArray sigIds = new JSONArray();
+        sigIds.addAll(this.sigIds);
+        object.put("sigIds", sigIds);
+
+        object.put("activated", Boolean.toString(this.activated));
+
+        return object.toJSONString();
     }
 
-    public String getHash() {
-        return this.hash;
-    }
-
-    public void setSigners(List<String> signers) {
-        this.signers = signers;
-    }
-
-    public List<String> getSigners() {
-        return signers;
-    }
-
-    public void setSignatures(List<String> signatures) {
-        this.signatures = signatures;
-    }
-
-    public List<String> getSignatures() {
-        return this.signatures;
-    }
-
-    public void deactivate() {
+    private void deactivate() {
         this.activated = false;
-    }
-
-    public boolean isActivated() {
-        return this.activated;
     }
 }
