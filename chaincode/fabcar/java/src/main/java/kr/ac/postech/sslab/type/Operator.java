@@ -1,43 +1,42 @@
 package kr.ac.postech.sslab.type;
 
+import org.json.simple.JSONArray;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Operator {
-    List<String> operators;
+    private List<String> operators;
 
     public Operator() {
         this.operators = new ArrayList<>();
     }
 
-    public Operator(List<String> operators) {
+    private Operator(List<String> operators) {
         this.operators = operators;
     }
 
-    @Override
-    public String toString() {
-        String result = "";
+    @SuppressWarnings("unchecked")
+    public JSONArray toJSONArray() {
+        JSONArray array = new JSONArray();
+        array.addAll(this.operators);
 
-        if(this.operators.size() > 0) {
-            for (String operator : this.operators) {
-                result += (operator + ",");
-            }
-
-            result = result.substring(0, result.length() - 1);
-        }
-
-        return result;
+        return array;
     }
 
-    public static Operator toList(String string) {
-        return new Operator(new ArrayList<>(Arrays.asList(string.split(","))));
+    public static Operator toList(JSONArray array) {
+        Operator operator = new Operator();
+        for (Object object : array) {
+            operator.operators.add(object.toString());
+        }
+
+        return operator;
     }
 
     public Operator add(String operator) {
         if (!existOperator(operator)) {
             this.operators.add(operator);
         }
+
         return new Operator(this.operators);
     }
 
