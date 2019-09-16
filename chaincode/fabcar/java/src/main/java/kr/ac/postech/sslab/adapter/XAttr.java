@@ -1,29 +1,27 @@
 package kr.ac.postech.sslab.adapter;
 
-import org.json.simple.parser.ParseException;
+import java.util.List;
 
 public class XAttr implements IXAttr {
     private XAttrAdapter adapter;
 
-    public XAttr(String xatt, String type) throws ParseException {
-        this.adapter = new XAttrAdapter(type, xatt);
+    @Override
+    public void assign(List<String> args) {
+        this.adapter = new XAttrAdapter(args);
     }
 
-    public XAttr(String type) {
-        this.adapter = new XAttrAdapter(type);
+    @Override
+    public void setXAttr(int index, String attr) {
+        this.adapter.setXAttr(index, attr);
+    }
+
+    @Override
+    public String getXAttr(int index) {
+        return this.adapter.getXAttr(index);
     }
 
     @Override
     public String  toJSONString() {
         return this.adapter.toJSONString();
-    }
-
-    @Override
-    public void deactivate() {
-        this.adapter.deactivate();
-    }
-
-    public boolean checker() {
-        return this.adapter.isActivated();
     }
  }

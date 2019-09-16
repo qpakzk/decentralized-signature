@@ -4,54 +4,48 @@ import kr.ac.postech.sslab.type.Base;
 import kr.ac.postech.sslab.type.IType;
 import kr.ac.postech.sslab.type.Document;
 import kr.ac.postech.sslab.type.Signature;
-import org.json.simple.parser.ParseException;
+
+import java.util.List;
 
 public class XAttrAdapter implements IXAttr {
-    private IType type;
- 
-    XAttrAdapter(String type, String xatt) throws ParseException {
+    private IType xattr;
+
+    XAttrAdapter(List<String> args) {
+        String type = args.get(0);
         switch (type) {
+            case "base":
+                this.xattr = new Base();
+                break;
+
             case "doc":
-                this.type = new Document(xatt);
+                this.xattr = new Document();
+                this.xattr.assign(args);
                 break;
 
             case "sig":
-                this.type = new Signature(xatt);
+                this.xattr = new Signature();
+                this.xattr.assign(args);
                 break;
         }
     }
 
-    XAttrAdapter(String type) {
-        this.type = new Base(type);
+    @Override
+    public void assign(List<String> args) {
+        this.xattr.assign(args);
+    }
+
+    @Override
+    public void setXAttr(int index, String attr) {
+        this.xattr.setXAttr(index, attr);
+    }
+
+    @Override
+    public String getXAttr(int index) {
+        return this.xattr.getXAttr(index);
     }
 
     @Override
     public String toJSONString() {
-        return this.type.toJSONString();
-    }
-
-    boolean isActivated() {
-        switch (this.type.getType()) {
-            case "doc":
-                return ((Document) this.type).isActivated();
-
-            case "sig":
-                return ((Signature) this.type).isActivated();
-        }
-
-        return true;
-    }
-
-    @Override
-    public void deactivate() {
-        switch (this.type.getType()) {
-            case "doc":
-                ((Document) this.type).deactivate();
-                break;
-
-            case "sig":
-                ((Signature) this.type).deactivate();
-                break;
-        }
+        return this.xattr.toJSONString();
     }
  }
