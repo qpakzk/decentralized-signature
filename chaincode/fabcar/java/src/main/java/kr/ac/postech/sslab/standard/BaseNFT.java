@@ -8,6 +8,8 @@ import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class BaseNFT implements IBaseNFT {
@@ -22,11 +24,16 @@ public class BaseNFT implements IBaseNFT {
             String id = args.get(0).toLowerCase();
             String type = args.get(1).toLowerCase();
             String owner = args.get(2).toLowerCase();
-            XAttr xatt = new XAttr(type);
+
+            XAttr xattr = new XAttr();
+            List<String> list = new ArrayList<>();
+            list.add(type);
+            xattr.assign(list);
+
             URI uri = new URI();
 
             NFT nft = new NFT();
-            nft.mint(stub, id, type, owner, xatt, uri);
+            nft.mint(stub, id, type, owner, xattr, uri);
 
             return ResponseUtils.newSuccessResponse("Mint a token " + nft.getId());
         } catch (Throwable throwable) {
