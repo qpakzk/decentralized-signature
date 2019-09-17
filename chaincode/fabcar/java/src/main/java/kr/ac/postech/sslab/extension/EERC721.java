@@ -87,10 +87,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String id = args.get(0).toLowerCase();
 
 			NFT nft = NFT.read(stub, id);
-
-			XAttr xattr = nft.getXAttr();
-			xattr.deactivate();
-			nft.setXAttr(stub, xattr);
+			nft.setXAttr(stub, 3, null);
 
 			return ResponseUtils.newSuccessResponse();
 		} catch (Throwable throwable) {
