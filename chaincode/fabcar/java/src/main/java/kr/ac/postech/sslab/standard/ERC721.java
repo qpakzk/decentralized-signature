@@ -86,7 +86,7 @@ public class ERC721 implements IERC721 {
 		}
 	}
 
-	protected boolean isOperator(ChaincodeStub stub, String owner, String operator) throws ParseException {
+	private boolean isOperator(ChaincodeStub stub, String owner, String operator) throws ParseException {
 		String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
 		QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
 
