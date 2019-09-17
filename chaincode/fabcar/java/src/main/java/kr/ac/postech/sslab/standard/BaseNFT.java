@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseNFT implements IBaseNFT {
-    //write
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
@@ -26,22 +25,21 @@ public class BaseNFT implements IBaseNFT {
             String owner = args.get(2).toLowerCase();
 
             XAttr xattr = new XAttr();
-            List<String> list = new ArrayList<>();
-            list.add(type);
-            xattr.assign(list);
+            xattr.assign(type, new ArrayList<>());
 
             URI uri = new URI();
+
+            //Check Client Identity
 
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
 
-            return ResponseUtils.newSuccessResponse("Mint a token " + nft.getId());
+            return ResponseUtils.newSuccessResponse("Success");
         } catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
     }
 
-    //write
     @Override
     public Response burn(ChaincodeStub stub, List<String> args) {
         try {
@@ -51,16 +49,17 @@ public class BaseNFT implements IBaseNFT {
 
             String id = args.get(0).toLowerCase();
 
+            //Check Client Identity
+
             NFT nft = NFT.read(stub, id);
             nft.burn(stub, id);
 
-            return ResponseUtils.newSuccessResponse("Burn a token " + nft.getId());
+            return ResponseUtils.newSuccessResponse("Success");
         } catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
     }
 
-    //read
     @Override
     public Response getType(ChaincodeStub stub, List<String> args) {
         try {
@@ -97,9 +96,11 @@ public class BaseNFT implements IBaseNFT {
                 throw new Throwable("Transfer of token that is not own");
             }
 
+            //Check Client Identity
+
             nft.setOwner(stub, receiver);
 
-            return ResponseUtils.newSuccessResponse("Change the owner to " + receiver);
+            return ResponseUtils.newSuccessResponse("Success");
         } catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
@@ -124,7 +125,6 @@ public class BaseNFT implements IBaseNFT {
         }
     }
 
-    //write
     @Override
     public Response setOperator(ChaincodeStub stub, List<String> args) {
         try {
@@ -142,6 +142,8 @@ public class BaseNFT implements IBaseNFT {
                 throw new Throwable("Operator shouldn't be the same as owner");
             }
 
+            //Check Client Identity
+
             String query = "{\"selector\":{\"owner\":\"" + caller + "\"}}";
             QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
 
@@ -149,7 +151,8 @@ public class BaseNFT implements IBaseNFT {
                 while(resultsIterator.iterator().hasNext()) {
                     String id = resultsIterator.iterator().next().getKey();
                     NFT nft = NFT.read(stub, id);
-                    nft.setOperator(stub, nft.getOperator().add(operator));
+                    nft.getOperator().add(operator);
+                    nft.setOperator(stub);
                 }
 
                 return ResponseUtils.newSuccessResponse(operator + " is added to operator of the token owned by " + caller);
@@ -158,7 +161,8 @@ public class BaseNFT implements IBaseNFT {
                 while(resultsIterator.iterator().hasNext()) {
                     String id = resultsIterator.iterator().next().getKey();
                     NFT nft = NFT.read(stub, id);
-                    nft.setOperator(stub, nft.getOperator().remove(operator));
+                    nft.getOperator().remove(operator);
+                    nft.setOperator(stub);
                 }
 
                 return ResponseUtils.newSuccessResponse(operator + " is removed from operator of the token owned by " + caller);
@@ -168,7 +172,6 @@ public class BaseNFT implements IBaseNFT {
         }
     }
 
-    //read
     @Override
     public Response getOperator(ChaincodeStub stub, List<String> args) {
         try {
@@ -187,7 +190,6 @@ public class BaseNFT implements IBaseNFT {
         }
     }
 
-    //write
     @Override
     public Response setApprovee(ChaincodeStub stub, List<String> args) {
         try {
@@ -198,16 +200,17 @@ public class BaseNFT implements IBaseNFT {
             String approvee = args.get(0).toLowerCase();
             String id = args.get(1).toLowerCase();
 
+            //Check Client Identity
+
             NFT nft = NFT.read(stub, id);
             nft.setApprovee(stub, approvee);
 
-            return ResponseUtils.newSuccessResponse("Succeeded approve");
+            return ResponseUtils.newSuccessResponse("Success");
         } catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
     }
 
-    //read
     @Override
     public Response getApprovee(ChaincodeStub stub, List<String> args) {
         try {
@@ -226,7 +229,6 @@ public class BaseNFT implements IBaseNFT {
         }
     }
 
-    //write
     @Override
     public Response setURI(ChaincodeStub stub, List<String> args) {
         try {
@@ -238,17 +240,28 @@ public class BaseNFT implements IBaseNFT {
             String attribute = args.get(1).toLowerCase();
             String id = args.get(2).toLowerCase();
 
+            //Check Client Identity
 
             NFT nft = NFT.read(stub, id);
-            nft.setURI(stub, index, attribute);
 
-            return ResponseUtils.newSuccessResponse("Update " + attribute);
+            switch (index) {
+                case 0:
+                    nft.getURI().setPath(attribute);
+                    break;
+
+                case 1:
+                    nft.getURI().setHash(attribute);
+                    break;
+            }
+
+            nft.setURI(stub);
+
+            return ResponseUtils.newSuccessResponse("Success");
         } catch (Throwable throwable) {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
     }
 
-    //read
     @Override
     public Response getURI(ChaincodeStub stub, List<String> args) {
         try {
@@ -264,7 +277,21 @@ public class BaseNFT implements IBaseNFT {
                     int index = Integer.parseInt(args.get(0));
                     String id = args.get(1).toLowerCase();
                     NFT nft = NFT.read(stub, id);
-                    String attribute = nft.getURI(index);
+
+                    String attribute;
+                    switch (index) {
+                        case 0:
+                             attribute = nft.getURI().getPath();
+                            break;
+
+                        case 1:
+                            attribute = nft.getURI().getHash();
+                            break;
+
+                        default:
+                            throw new Throwable("Incorrect index. Expecting 0 or 1");
+                    }
+
                     return ResponseUtils.newSuccessResponse(attribute);
                 }
 
