@@ -137,4 +137,8 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
             return ResponseUtils.newErrorResponse(throwable.getMessage());
         }
     }
+
+    public static void main(String[] args) {
+        new CustomMain().start(args);
+    }
 }
