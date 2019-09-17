@@ -38,7 +38,7 @@ public class DocNFT extends BaseNFT implements IXNFT {
             list.add(hash);
             list.add(signers);
 
-            xattr.assign(list);
+            xattr.assign(type, list);
 
             URI uri = new URI(args.get(5).toLowerCase(), args.get(6).toLowerCase());
 

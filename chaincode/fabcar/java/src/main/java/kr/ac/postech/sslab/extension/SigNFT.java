@@ -32,7 +32,7 @@ public class SigNFT extends BaseNFT implements IXNFT {
             list.add(Long.toString(new Random().nextLong()));
             list.add(hash);
 
-            xattr.assign(list);
+            xattr.assign(type, list);
 
             URI uri = new URI(args.get(4).toLowerCase(), args.get(5).toLowerCase());
 

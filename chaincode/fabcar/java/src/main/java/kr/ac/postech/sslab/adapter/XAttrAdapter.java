@@ -11,23 +11,6 @@ import java.util.List;
 public class XAttrAdapter implements IXAttr {
     private IType xattr;
 
-    XAttrAdapter(List<String> args) {
-        String type = args.get(0);
-        switch (type) {
-            case "base":
-                this.xattr = new Base();
-                break;
-
-            case "doc":
-                this.xattr = new Document();
-                break;
-
-            case "sig":
-                this.xattr = new Signature();
-                break;
-        }
-    }
-
     XAttrAdapter(String type) {
         switch (type) {
             case "base":
@@ -44,7 +27,6 @@ public class XAttrAdapter implements IXAttr {
         }
     }
 
-    @Override
     public void assign(List<String> args) {
         this.xattr.assign(args);
     }

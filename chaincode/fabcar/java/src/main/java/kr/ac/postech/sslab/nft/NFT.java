@@ -50,9 +50,9 @@ public class NFT {
         Operator operator = Operator.toList((JSONArray) object.get("operator"));
         String approvee = object.get("approvee").toString();
         XAttr xattr = new XAttr();
-        xattr.assign(object, type);
+        xattr.assign(type, (JSONObject) object.get("xattr"));
         URI uri = new URI();
-        uri.parse(object.get("uri").toString());
+        uri.assign((JSONObject) object.get("uri"));
 
         return new NFT(id, type, owner, operator, approvee, xattr, uri);
     }
@@ -76,6 +76,10 @@ public class NFT {
 
     public String getOwner() {
         return this.owner;
+    }
+
+    public void setOperator(ChaincodeStub stub) {
+        stub.putStringState(this.id, this.toJSONString());
     }
 
     public void setOperator(ChaincodeStub stub, Operator operator) {
@@ -108,38 +112,12 @@ public class NFT {
         return this.xattr.getXAttr(index);
     }
 
-    public void setURI(ChaincodeStub stub, int index, String attribute) throws Throwable {
-        switch (index) {
-            case 0:
-                this.uri.setPath(attribute);
-                break;
-
-            case 1:
-                this.uri.setHash(attribute);
-                break;
-
-            default:
-                throw new Throwable("Incorrect index. Expecting 0 or 1");
-        }
-
+    public void setURI(ChaincodeStub stub) {
         stub.putStringState(this.id, this.toJSONString());
     }
 
     public URI getURI() {
         return this.uri;
-    }
-
-    public String getURI(int index) throws Throwable {
-        switch (index) {
-            case 0:
-                return uri.getPath();
-
-            case 1:
-                return uri.getHash();
-
-            default:
-                throw new Throwable("Incorrect index. Expecting 0 or 1");
-        }
     }
 
     @SuppressWarnings("unchecked")

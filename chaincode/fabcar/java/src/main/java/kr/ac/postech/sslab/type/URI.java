@@ -2,8 +2,6 @@ package kr.ac.postech.sslab.type;
 
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +45,7 @@ public class URI {
         return this.hash;
     }
 
-    public void parse(String uri) throws ParseException {
-        JSONObject object = (JSONObject) new JSONParser().parse(uri);
+    public void assign(JSONObject object) {
         this.path = object.get("path").toString();
         this.hash = object.get("hash").toString();
     }

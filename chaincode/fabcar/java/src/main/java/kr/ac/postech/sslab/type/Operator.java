@@ -11,10 +11,6 @@ public class Operator {
         this.operators = new ArrayList<>();
     }
 
-    private Operator(List<String> operators) {
-        this.operators = operators;
-    }
-
     @SuppressWarnings("unchecked")
     public JSONArray toJSONArray() {
         JSONArray array = new JSONArray();
@@ -32,17 +28,14 @@ public class Operator {
         return operator;
     }
 
-    public Operator add(String operator) {
+    public void add(String operator) {
         if (!existOperator(operator)) {
             this.operators.add(operator);
         }
-
-        return new Operator(this.operators);
     }
 
-    public Operator remove(String operator) {
+    public void remove(String operator) {
         this.operators.remove(operator);
-        return new Operator(this.operators);
     }
 
     public boolean existOperator(String inputOperator) {
