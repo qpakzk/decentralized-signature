@@ -1,5 +1,7 @@
 package kr.ac.postech.sslab.adapter;
 
+import org.json.simple.JSONObject;
+
 import java.util.List;
 
 public class XAttr implements IXAttr {
@@ -8,6 +10,12 @@ public class XAttr implements IXAttr {
     @Override
     public void assign(List<String> args) {
         this.adapter = new XAttrAdapter(args);
+        this.adapter.assign(args);
+    }
+
+    public void assign(JSONObject object, String type) {
+        this.adapter = new XAttrAdapter(type);
+        this.adapter.assign(object);
     }
 
     @Override
