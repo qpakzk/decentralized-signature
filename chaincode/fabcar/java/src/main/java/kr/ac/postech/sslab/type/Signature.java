@@ -1,39 +1,33 @@
 package kr.ac.postech.sslab.type;
 
 import org.json.simple.JSONObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Signature implements IType {
-    private String id;
-    private String parentId;
-    private String type;
     private String hash;
     private boolean activated;
 
     /*
    attr       | index
    ==================
-   type       | 0
-   id         | 1
-   parentId   | 2
-   hash       | 3
-   activated  | 4
+   hash       | 0
+   activated  | 1
    */
 
     @Override
     public void assign(List<String> args) {
-        this.type = args.get(0);
-        this.id = args.get(1);
-        this.parentId = args.get(2);
-        this.hash = args.get(3);
+        this.hash = args.get(0);
         this.activated = true;
+    }
+
+    public void assign(JSONObject object)  {
+        this.hash = object.get("hash").toString();
+        this.activated = Boolean.parseBoolean(object.get("activated").toString());
     }
 
     @Override
     public void setXAttr(int index, String attr) {
-        if (index == 4) {
+        if (index == 1) {
             this.deactivate();
         }
     }
@@ -42,18 +36,9 @@ public class Signature implements IType {
     public String getXAttr(int index) {
         switch (index) {
             case 0:
-                return this.type;
-
-            case 1:
-                return this.id;
-
-            case 2:
-                return this.parentId;
-
-            case 3:
                 return this.hash;
 
-            case 4:
+            case 1:
                 return Boolean.toString(this.activated);
         }
 
@@ -64,9 +49,6 @@ public class Signature implements IType {
     @SuppressWarnings("unchecked")
     public String toJSONString() {
         JSONObject object = new JSONObject();
-        object.put("type", this.type);
-        object.put("id", this.id);
-        object.put("parentId", this.parentId);
         object.put("hash", this.hash);
         object.put("activated", this.activated);
 
