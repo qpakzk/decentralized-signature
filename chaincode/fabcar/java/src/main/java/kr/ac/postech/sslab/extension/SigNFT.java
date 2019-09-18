@@ -27,9 +27,6 @@ public class SigNFT extends BaseNFT implements IXNFT {
 
             XAttr xattr = new XAttr();
             List<String> list = new ArrayList<>();
-            list.add(type);
-            list.add(id);
-            list.add(Long.toString(new Random().nextLong()));
             list.add(hash);
 
             xattr.assign(type, list);

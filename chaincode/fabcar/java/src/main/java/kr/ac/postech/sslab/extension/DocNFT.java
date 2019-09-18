@@ -33,8 +33,6 @@ public class DocNFT extends BaseNFT implements IXNFT {
 
 
             list.add(Long.toString(new Random().nextLong()));
-            list.add(id);
-
             list.add(hash);
             list.add(signers);
 
