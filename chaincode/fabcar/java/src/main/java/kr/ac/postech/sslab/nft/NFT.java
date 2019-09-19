@@ -49,10 +49,14 @@ public class NFT {
         String owner = object.get("owner").toString();
         Operator operator = Operator.toList((JSONArray) object.get("operator"));
         String approvee = object.get("approvee").toString();
+
         XAttr xattr = new XAttr();
-        xattr.assign(type, (JSONObject) object.get("xattr"));
+        JSONObject xattrJson = (JSONObject) new JSONParser().parse(object.get("xattr").toString());
+        xattr.assign(type, xattrJson);
+
         URI uri = new URI();
-        uri.assign((JSONObject) object.get("uri"));
+        JSONObject uriJson = (JSONObject) new JSONParser().parse(object.get("uri").toString());
+        uri.assign(uriJson);
 
         return new NFT(id, type, owner, operator, approvee, xattr, uri);
     }
