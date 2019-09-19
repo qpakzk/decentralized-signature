@@ -1,6 +1,5 @@
 package kr.ac.postech.sslab.extension;
 
-import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ResponseUtils;
@@ -96,6 +95,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
     public Response query(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
@@ -105,16 +105,17 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String id = args.get(0).toLowerCase();
 
 			NFT nft = NFT.read(stub, id);
-			Map<String, String> map = new HashMap<>();
-			map.put("id", nft.getId());
-			map.put("type", nft.getType());
-			map.put("owner", nft.getOwner());
-			map.put("operator", nft.getOperator().toString());
-			map.put("approvee", nft.getApprovee());
-			map.put("xattr", nft.getXAttr().toJSONString());
-			map.put("uri", nft.getURI().toJSONString());
 
-			String query = new JSONObject(map).toJSONString();
+			JSONObject object = new JSONObject();
+			object.put("id", nft.getId());
+			object.put("type", nft.getType());
+			object.put("owner", nft.getOwner());
+			object.put("operator", nft.getOperator().toJSONArray().toString());
+			object.put("approvee", nft.getApprovee());
+			object.put("xattr", nft.getXAttr().toJSONString());
+			object.put("uri", nft.getURI().toJSONString());
+
+			String query = object.toJSONString();
 			return ResponseUtils.newSuccessResponse(query);
 		} catch (Throwable throwable) {
 			return ResponseUtils.newErrorResponse(throwable.getMessage());
