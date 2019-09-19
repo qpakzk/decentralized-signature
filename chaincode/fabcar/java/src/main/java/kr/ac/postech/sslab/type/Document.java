@@ -28,17 +28,20 @@ public class Document implements IType {
         this.activated = true;
     }
 
-    @SuppressWarnings("unchecked")
     public void assign(JSONObject object) {
         this.hash = object.get("hash").toString();
 
         JSONArray signers = (JSONArray) object.get("signers");
         this.signers = new ArrayList<>();
-        this.signers.addAll(signers);
+        for (Object signer : signers) {
+            this.signers.add((String) signer);
+        }
 
         JSONArray sigIds = (JSONArray) object.get("sigIds");
         this.sigIds = new ArrayList<>();
-        this.sigIds.addAll(sigIds);
+        for (Object sigId : sigIds) {
+            this.sigIds.add((String) sigId);
+        }
 
         this.activated = Boolean.parseBoolean(object.get("activated").toString());
     }
