@@ -28,6 +28,7 @@ public class Document implements IType {
         this.activated = true;
     }
 
+    @Override
     public void assign(JSONObject object) {
         this.hash = object.get("hash").toString();
 
