@@ -29,10 +29,6 @@ public class DocNFT extends BaseNFT implements IXNFT {
 
             XAttr xattr = new XAttr();
             List<String> list = new ArrayList<>();
-            list.add(type);
-
-
-            list.add(Long.toString(new Random().nextLong()));
             list.add(hash);
             list.add(signers);
 
