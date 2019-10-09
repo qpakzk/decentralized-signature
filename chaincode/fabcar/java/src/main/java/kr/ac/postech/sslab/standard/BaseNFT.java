@@ -25,7 +25,7 @@ public class BaseNFT implements IBaseNFT {
             String owner = args.get(2).toLowerCase();
 
             XAttr xattr = new XAttr();
-            xattr.assign(type, new ArrayList<>());
+            xattr.assign(type, new ArrayList<String>());
 
             URI uri = new URI();
 
