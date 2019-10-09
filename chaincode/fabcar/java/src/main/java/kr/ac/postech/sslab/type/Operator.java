@@ -30,6 +30,10 @@ public class Operator {
         this.operators = operators;
     }
 
+    public List<String> getOperators() {
+        return this.operators;
+    }
+
     public void add(String operator) {
         if (!existOperator(operator)) {
             this.operators.add(operator);

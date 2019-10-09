@@ -181,7 +181,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String id = args.get(0).toLowerCase();
             NFT nft = NFT.read(stub, id);
 
-            String operator = nft.getOperator().toString();
+            String operator = nft.getOperator().getOperators().toString();
 
             return newSuccessResponse(operator);
         } catch (Throwable throwable) {
