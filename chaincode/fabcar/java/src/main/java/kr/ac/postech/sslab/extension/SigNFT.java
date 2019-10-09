@@ -20,6 +20,8 @@ public class SigNFT extends BaseNFT implements IXNFT {
             String type = args.get(1).toLowerCase();
             String owner = args.get(2).toLowerCase();
             String hash = args.get(3).toLowerCase();
+            String path = args.get(4).toLowerCase();
+            String offChainHash = args.get(5).toLowerCase();
 
             XAttr xattr = new XAttr();
             List<String> list = new ArrayList<>();
@@ -27,7 +29,7 @@ public class SigNFT extends BaseNFT implements IXNFT {
 
             xattr.assign(type, list);
 
-            URI uri = new URI(args.get(4).toLowerCase(), args.get(5).toLowerCase());
+            URI uri = new URI(path, offChainHash);
 
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
