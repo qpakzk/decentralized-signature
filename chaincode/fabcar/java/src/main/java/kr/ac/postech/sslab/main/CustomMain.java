@@ -123,10 +123,10 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
             NFT nft = NFT.read(stub, id);
             switch (nft.getType()) {
                 case "doc":
-                    return this.getXAttr(stub, args);
+                    return this.doc.getXAttr(stub, args);
 
                 case "sig":
-                    return this.getXAttr(stub, args);
+                    return this.sig.getXAttr(stub, args);
 
                 default:
                     throw  new Throwable("error");
