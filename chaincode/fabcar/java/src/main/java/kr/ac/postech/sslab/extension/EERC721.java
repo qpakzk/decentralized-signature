@@ -1,14 +1,15 @@
 package kr.ac.postech.sslab.extension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+
+import java.io.IOException;
 import java.util.*;
 import kr.ac.postech.sslab.standard.*;
 import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 public class EERC721 extends ERC721 implements IEERC721 {
 	@Override
@@ -33,7 +34,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 		}
 	}
 
-	private long getBalance(ChaincodeStub stub, String owner, String type) throws ParseException {
+	private long getBalance(ChaincodeStub stub, String owner, String type) throws IOException {
 		String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
 
 		long ownedTokensCount = 0;
@@ -103,16 +104,17 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			NFT nft = NFT.read(stub, id);
 
-			JSONObject object = new JSONObject();
-			object.put("id", nft.getId());
-			object.put("type", nft.getType());
-			object.put("owner", nft.getOwner());
-			object.put("operator", nft.getOperator().toJSONArray().toString());
-			object.put("approvee", nft.getApprovee());
-			object.put("xattr", nft.getXAttr().toJSONString());
-			object.put("uri", nft.getURI().toJSONString());
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, String> map = new HashMap<>();
+			map.put("id", nft.getId());
+			map.put("type", nft.getType());
+			map.put("owner", nft.getOwner());
+			map.put("operator", nft.getOperator().toJSONArray());
+			map.put("approvee", nft.getApprovee());
+			map.put("xattr", nft.getXAttr().toJSONString());
+			map.put("uri", nft.getURI().toJSONString());
 
-			String query = object.toJSONString();
+			String query = mapper.writeValueAsString(map);
 			return newSuccessResponse(query);
 		} catch (Throwable throwable) {
 			return newErrorResponse(throwable.getMessage());

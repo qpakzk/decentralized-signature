@@ -1,6 +1,8 @@
 package kr.ac.postech.sslab.type;
 
-import org.json.simple.JSONArray;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,21 +13,21 @@ public class Operator {
         this.operators = new ArrayList<>();
     }
 
-    @SuppressWarnings("unchecked")
-    public JSONArray toJSONArray() {
-        JSONArray array = new JSONArray();
-        array.addAll(this.operators);
-
-        return array;
+    public String toJSONArray() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this.operators);
     }
 
-    public static Operator toList(JSONArray array) {
+    public static Operator toList(String jsonArray) throws IOException {
         Operator operator = new Operator();
-        for (Object object : array) {
-            operator.operators.add(object.toString());
-        }
+        ObjectMapper mapper = new ObjectMapper();
 
+        operator.setOperators(mapper.readValue(jsonArray, List.class));
         return operator;
+    }
+
+    private void setOperators(List<String> operators) {
+        this.operators = operators;
     }
 
     public void add(String operator) {

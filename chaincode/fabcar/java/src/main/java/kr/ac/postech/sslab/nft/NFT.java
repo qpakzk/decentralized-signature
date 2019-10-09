@@ -1,13 +1,17 @@
 package kr.ac.postech.sslab.nft;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.type.Operator;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class NFT {
     private String id;
@@ -30,7 +34,7 @@ public class NFT {
         this.uri = uri;
     }
 
-    public void mint(ChaincodeStub stub, String id, String type, String owner, XAttr xattr, URI uri) {
+    public void mint(ChaincodeStub stub, String id, String type, String owner, XAttr xattr, URI uri) throws JsonProcessingException {
         this.id = id;
         this.type = type;
         this.owner = owner;
@@ -42,21 +46,23 @@ public class NFT {
         stub.putStringState(this.id, this.toJSONString());
     }
 
-    public static NFT read(ChaincodeStub stub, String id) throws ParseException {
-        JSONObject object = (JSONObject) new JSONParser().parse(stub.getStringState(id));
+    public static NFT read(ChaincodeStub stub, String id) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = stub.getStringState(id);
+        JsonNode node = mapper.readTree(jsonString);
 
-        String type = object.get("type").toString();
-        String owner = object.get("owner").toString();
-        Operator operator = Operator.toList((JSONArray) object.get("operator"));
-        String approvee = object.get("approvee").toString();
+        String type = node.get("type").asText();
+        String owner = node.get("owner").asText();
+        Operator operator = Operator.toList(node.get("operator").asText());
+        String approvee = node.get("approvee").asText();
 
         XAttr xattr = new XAttr();
-        JSONObject xattrJson = (JSONObject) new JSONParser().parse(object.get("xattr").toString());
-        xattr.assign(type, xattrJson);
+        JsonNode xattrNode = node.get("xattr");
+        xattr.assign(type, xattrNode.asText());
 
         URI uri = new URI();
-        JSONObject uriJson = (JSONObject) new JSONParser().parse(object.get("uri").toString());
-        uri.assign(uriJson);
+        JsonNode uriNode = node.get("uri");
+        uri.assign(uriNode.asText());
 
         return new NFT(id, type, owner, operator, approvee, xattr, uri);
     }
@@ -73,7 +79,7 @@ public class NFT {
         return this.type;
     }
 
-    public void setOwner(ChaincodeStub stub, String owner) {
+    public void setOwner(ChaincodeStub stub, String owner) throws JsonProcessingException {
         this.owner = owner;
         stub.putStringState(this.id, this.toJSONString());
     }
@@ -82,11 +88,11 @@ public class NFT {
         return this.owner;
     }
 
-    public void setOperator(ChaincodeStub stub) {
+    public void setOperator(ChaincodeStub stub) throws JsonProcessingException {
         stub.putStringState(this.id, this.toJSONString());
     }
 
-    public void setOperator(ChaincodeStub stub, Operator operator) {
+    public void setOperator(ChaincodeStub stub, Operator operator) throws JsonProcessingException {
         this.operator = operator;
         stub.putStringState(this.id, this.toJSONString());
     }
@@ -95,7 +101,7 @@ public class NFT {
         return this.operator;
     }
 
-    public void setApprovee(ChaincodeStub stub, String approvee) {
+    public void setApprovee(ChaincodeStub stub, String approvee) throws JsonProcessingException {
         this.approvee = approvee;
         stub.putStringState(this.id, this.toJSONString());
     }
@@ -104,7 +110,7 @@ public class NFT {
         return this.approvee;
     }
 
-    public void setXAttr(ChaincodeStub stub, int index, String attr) {
+    public void setXAttr(ChaincodeStub stub, int index, String attr) throws JsonProcessingException {
         this.xattr.setXAttr(index, attr);
         stub.putStringState(this.id, this.toJSONString());
     }
@@ -116,7 +122,7 @@ public class NFT {
         return this.xattr.getXAttr(index);
     }
 
-    public void setURI(ChaincodeStub stub) {
+    public void setURI(ChaincodeStub stub) throws JsonProcessingException {
         stub.putStringState(this.id, this.toJSONString());
     }
 
@@ -124,17 +130,18 @@ public class NFT {
         return this.uri;
     }
 
-    @SuppressWarnings("unchecked")
-    private String toJSONString() {
-        JSONObject object = new JSONObject();
-        object.put("id", this.id);
-        object.put("type", this.type);
-        object.put("owner", this.owner);
-        object.put("operator", this.operator.toJSONArray());
-        object.put("approvee", this.approvee);
-        object.put("xattr", this.xattr.toJSONString());
-        object.put("uri", this.uri.toJSONString());
+    private String toJSONString() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = new HashMap<>();
 
-        return object.toJSONString();
+        map.put("id", this.id);
+        map.put("type", this.type);
+        map.put("owner", this.owner);
+        map.put("operator", this.operator.toJSONArray());
+        map.put("approvee", this.approvee);
+        map.put("xattr", this.xattr.toJSONString());
+        map.put("uri", this.uri.toJSONString());
+
+        return mapper.writeValueAsString(map);
     }
 }

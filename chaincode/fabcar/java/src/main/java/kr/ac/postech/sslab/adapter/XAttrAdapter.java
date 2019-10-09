@@ -1,11 +1,13 @@
 package kr.ac.postech.sslab.adapter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import kr.ac.postech.sslab.type.Base;
 import kr.ac.postech.sslab.type.IType;
 import kr.ac.postech.sslab.type.Document;
 import kr.ac.postech.sslab.type.Signature;
-import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 
 public class XAttrAdapter implements IXAttr {
@@ -14,6 +16,7 @@ public class XAttrAdapter implements IXAttr {
     XAttrAdapter(String type) {
         switch (type) {
             case "base":
+            case "erc721":
                 this.xattr = new Base();
                 break;
 
@@ -31,8 +34,8 @@ public class XAttrAdapter implements IXAttr {
         this.xattr.assign(args);
     }
 
-    public void assign(JSONObject object) {
-        this.xattr.assign(object);
+    public void assign(String jsonString) throws IOException {
+        this.xattr.assign(jsonString);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class XAttrAdapter implements IXAttr {
     }
 
     @Override
-    public String toJSONString() {
+    public String toJSONString() throws JsonProcessingException {
         return this.xattr.toJSONString();
     }
  }

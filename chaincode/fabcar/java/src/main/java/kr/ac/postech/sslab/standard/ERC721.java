@@ -5,8 +5,7 @@ import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.json.simple.parser.ParseException;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 		}
 	}
 
-	private boolean isOperator(ChaincodeStub stub, String owner, String operator) throws ParseException {
+	private boolean isOperator(ChaincodeStub stub, String owner, String operator) throws IOException {
 		String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
 		QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
 

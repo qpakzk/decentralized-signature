@@ -1,8 +1,9 @@
 package kr.ac.postech.sslab.type;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.*;
 
 public class Document implements IType {
@@ -29,22 +30,18 @@ public class Document implements IType {
     }
 
     @Override
-    public void assign(JSONObject object) {
-        this.hash = object.get("hash").toString();
+    public void assign(String jsonString) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(jsonString);
+        this.hash = node.get("hash").asText();
 
-        JSONArray signers = (JSONArray) object.get("signers");
-        this.signers = new ArrayList<>();
-        for (Object signer : signers) {
-            this.signers.add((String) signer);
-        }
+        String signersJsonArray = node.get("signers").asText();
+        this.signers = mapper.readValue(signersJsonArray, List.class);
 
-        JSONArray sigIds = (JSONArray) object.get("sigIds");
-        this.sigIds = new ArrayList<>();
-        for (Object sigId : sigIds) {
-            this.sigIds.add((String) sigId);
-        }
+        String sigIdsJsonArray = node.get("sigIds").asText();
+        this.sigIds = mapper.readValue(sigIdsJsonArray, ArrayList.class);
 
-        this.activated = Boolean.parseBoolean(object.get("activated").toString());
+        this.activated = node.get("activated").asBoolean();
     }
 
     @Override
@@ -99,21 +96,16 @@ public class Document implements IType {
 
     @Override
     @SuppressWarnings("unchecked")
-    public String toJSONString() {
-        JSONObject object = new JSONObject();
-        object.put("hash", this.hash);
+    public String toJSONString() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
 
-        JSONArray signers = new JSONArray();
-        signers.addAll(this.signers);
-        object.put("signers", signers);
+        Map<String, String> map = new HashMap<>();
+        map.put("hash", this.hash);
+        map.put("signers", mapper.writeValueAsString(this.signers));
+        map.put("sigIds", mapper.writeValueAsString(this.sigIds));
+        map.put("activated", Boolean.toString(this.activated));
 
-        JSONArray sigIds = new JSONArray();
-        sigIds.addAll(this.sigIds);
-        object.put("sigIds", sigIds);
-
-        object.put("activated", Boolean.toString(this.activated));
-
-        return object.toJSONString();
+        return mapper.writeValueAsString(map);
     }
 
     private void deactivate() {

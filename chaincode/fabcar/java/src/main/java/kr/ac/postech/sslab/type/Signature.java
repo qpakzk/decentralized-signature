@@ -1,7 +1,13 @@
 package kr.ac.postech.sslab.type;
 
-import org.json.simple.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Signature implements IType {
     private String hash;
@@ -21,9 +27,11 @@ public class Signature implements IType {
     }
 
     @Override
-    public void assign(JSONObject object)  {
-        this.hash = object.get("hash").toString();
-        this.activated = Boolean.parseBoolean(object.get("activated").toString());
+    public void assign(String jsonString) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(jsonString);
+        this.hash = node.get("hash").asText();
+        this.activated = node.get("activated").asBoolean();
     }
 
     @Override
@@ -47,13 +55,14 @@ public class Signature implements IType {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public String toJSONString() {
-        JSONObject object = new JSONObject();
-        object.put("hash", this.hash);
-        object.put("activated", this.activated);
+    public String toJSONString() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = new HashMap<>();
 
-        return object.toJSONString();
+        map.put("hash", this.hash);
+        map.put("activated", Boolean.toString(this.activated));
+
+        return mapper.writeValueAsString(map);
     }
 
     private void deactivate() {

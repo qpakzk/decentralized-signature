@@ -1,7 +1,5 @@
 package kr.ac.postech.sslab.type;
 
-import org.json.simple.JSONObject;
-
 import java.util.List;
 
 public class Base implements IType {
@@ -10,7 +8,7 @@ public class Base implements IType {
     }
 
     @Override
-    public void assign(JSONObject object) {
+    public void assign(String jsonString) {
 
     }
 

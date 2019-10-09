@@ -1,7 +1,10 @@
 package kr.ac.postech.sslab.adapter;
 
-import org.json.simple.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 public class XAttr implements IXAttr {
@@ -12,9 +15,9 @@ public class XAttr implements IXAttr {
         this.adapter.assign(args);
     }
 
-    public void assign(String type, JSONObject object) {
+    public void assign(String type, String jsonString) throws IOException {
         this.adapter = new XAttrAdapter(type);
-        this.adapter.assign(object);
+        this.adapter.assign(jsonString);
     }
 
     @Override
@@ -28,7 +31,7 @@ public class XAttr implements IXAttr {
     }
 
     @Override
-    public String  toJSONString() {
+    public String  toJSONString() throws JsonProcessingException {
         return this.adapter.toJSONString();
     }
  }
