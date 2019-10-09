@@ -2,13 +2,12 @@ package kr.ac.postech.sslab.extension;
 
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
-import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SigNFT extends BaseNFT implements IXNFT {
+public class SigNFT extends XNFT {
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
@@ -35,44 +34,6 @@ public class SigNFT extends BaseNFT implements IXNFT {
             nft.mint(stub, id, type, owner, xattr, uri);
 
             return newSuccessResponse("Mint a token " + nft.getId());
-        } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
-        }
-    }
-
-    @Override
-    public Response setXAttr(ChaincodeStub stub, List<String> args) {
-        try {
-            if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
-            }
-
-            String id = args.get(0).toLowerCase();
-            int index = Integer.parseInt(args.get(1));
-            String attr  = args.get(2).toLowerCase();
-
-            NFT nft = NFT.read(stub, id);
-            nft.setXAttr(stub, index, attr);
-
-            return newSuccessResponse("Set a token attribute");
-        } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
-        }
-    }
-
-    @Override
-    public Response getXAttr(ChaincodeStub stub, List<String> args) {
-        try {
-            if (args.size() != 2) {
-                throw new Throwable("Incorrect number of arguments. Expecting 2");
-            }
-
-            String id = args.get(0).toLowerCase();
-            int index = Integer.parseInt(args.get(1));
-
-            NFT nft = NFT.read(stub, id);
-
-            return newSuccessResponse(nft.getXAttr(index));
         } catch (Throwable throwable) {
             return newErrorResponse(throwable.getMessage());
         }

@@ -15,6 +15,4 @@ public interface IBaseNFT {
     Response getOperator(ChaincodeStub stub, List<String> args);
     Response setApprovee(ChaincodeStub stub, List<String> args);
     Response getApprovee(ChaincodeStub stub, List<String> args);
-    Response setURI(ChaincodeStub stub, List<String> args);
-    Response getURI(ChaincodeStub stub, List<String> args);
 }

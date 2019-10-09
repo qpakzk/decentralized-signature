@@ -40,6 +40,12 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                 case "mint":
                     return this.mint(stub, args);
 
+                case "setURI":
+                    return this.setURI(stub, args);
+
+                case  "getURI":
+                    return this.getURI(stub, args);
+
                 case "setXAttr":
                     return this.setXAttr(stub, args);
 
@@ -93,6 +99,46 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
 
             default:
                 return super.mint(stub, args);
+        }
+    }
+
+    @Override
+    public Response getURI(ChaincodeStub stub, List<String> args) {
+        try {
+            String id = args.get(0).toLowerCase();
+            NFT nft = NFT.read(stub, id);
+            switch (nft.getType()) {
+                case "doc":
+                    return this.doc.getURI(stub, args);
+
+                case "sig":
+                    return this.sig.getURI(stub, args);
+
+                default:
+                    throw new Throwable("error");
+            }
+        } catch (Throwable throwable) {
+            return newErrorResponse(throwable.getMessage());
+        }
+    }
+
+    @Override
+    public Response setURI(ChaincodeStub stub, List<String> args) {
+        try {
+            String id = args.get(0).toLowerCase();
+            NFT nft = NFT.read(stub, id);
+            switch (nft.getType()) {
+                case "doc":
+                    return this.doc.setURI(stub, args);
+
+                case "sig":
+                    return this.sig.setURI(stub, args);
+
+                default:
+                    throw new Throwable("error");
+            }
+        } catch (Throwable throwable) {
+            return newErrorResponse(throwable.getMessage());
         }
     }
 

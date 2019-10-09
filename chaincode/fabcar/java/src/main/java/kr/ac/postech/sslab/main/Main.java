@@ -72,12 +72,6 @@ public class Main extends ConcreteChaincodeBase implements IERC721, IBaseNFT {
                 case "getApprovee":
                     return this.getApprovee(stub, args);
 
-                case "setURI":
-                    return this.setURI(stub, args);
-
-                case  "getURI":
-                    return this.getURI(stub, args);
-
                 default:
                     throw new Throwable("Invalid invoke method name");
             }
@@ -169,16 +163,6 @@ public class Main extends ConcreteChaincodeBase implements IERC721, IBaseNFT {
     @Override
     public Response getApprovee(ChaincodeStub stub, List<String> args) {
         return this.nft.getApprovee(stub, args);
-    }
-
-    @Override
-    public Response getURI(ChaincodeStub stub, List<String> args) {
-        return this.nft.getURI(stub, args);
-    }
-
-    @Override
-    public Response setURI(ChaincodeStub stub, List<String> args) {
-        return this.nft.setURI(stub, args);
     }
 
     public static void main(String[] args) {
