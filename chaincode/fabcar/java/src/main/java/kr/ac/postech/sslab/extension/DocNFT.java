@@ -4,13 +4,9 @@ import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.type.URI;
-import org.hyperledger.fabric.shim.Chaincode.Response;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class DocNFT extends BaseNFT implements IXNFT {
     //write
@@ -39,9 +35,9 @@ public class DocNFT extends BaseNFT implements IXNFT {
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
 
-            return ResponseUtils.newSuccessResponse("Mint a token " + nft.getId());
+            return newSuccessResponse("Mint a token " + nft.getId());
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -59,9 +55,9 @@ public class DocNFT extends BaseNFT implements IXNFT {
             NFT nft = NFT.read(stub, id);
             nft.setXAttr(stub, index, attr);
 
-            return ResponseUtils.newSuccessResponse("Set a token attribute");
+            return newSuccessResponse("Set a token attribute");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -77,9 +73,9 @@ public class DocNFT extends BaseNFT implements IXNFT {
 
             NFT nft = NFT.read(stub, id);
 
-            return ResponseUtils.newSuccessResponse(nft.getXAttr(index));
+            return newSuccessResponse(nft.getXAttr(index));
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 }

@@ -2,10 +2,7 @@ package kr.ac.postech.sslab.extension;
 
 import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
-import org.hyperledger.fabric.shim.Chaincode.Response;
 import java.util.*;
-
 import kr.ac.postech.sslab.standard.*;
 import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
@@ -30,9 +27,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			long ownedTokensCount = this.getBalance(stub, owner, type);
 
-			return ResponseUtils.newSuccessResponse(Long.toString(ownedTokensCount));
+			return newSuccessResponse(Long.toString(ownedTokensCount));
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -70,9 +67,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			dup.setOperator(stub, nft.getOperator());
 			dup.setApprovee(stub, nft.getApprovee());
 
-			return ResponseUtils.newSuccessResponse();
+			return newSuccessResponse();
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -88,9 +85,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			NFT nft = NFT.read(stub, id);
 			nft.setXAttr(stub, 3, null);
 
-			return ResponseUtils.newSuccessResponse();
+			return newSuccessResponse();
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -116,9 +113,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			object.put("uri", nft.getURI().toJSONString());
 
 			String query = object.toJSONString();
-			return ResponseUtils.newSuccessResponse(query);
+			return newSuccessResponse(query);
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -142,9 +139,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			while (it.hasNext()) {
 				result += (it.next() + "  ");
 			}
-			return ResponseUtils.newSuccessResponse(result);
+			return newSuccessResponse(result);
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 }

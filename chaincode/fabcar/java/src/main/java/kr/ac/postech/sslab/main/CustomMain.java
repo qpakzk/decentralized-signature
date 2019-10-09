@@ -3,8 +3,6 @@ package kr.ac.postech.sslab.main;
 import kr.ac.postech.sslab.extension.*;
 import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
-
 import java.util.List;
 
 public class CustomMain extends Main implements IEERC721, IXNFT {
@@ -54,7 +52,7 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
             }
 
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -114,7 +112,7 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     throw  new Throwable("error");
             }
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -134,7 +132,7 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     throw  new Throwable("error");
             }
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 

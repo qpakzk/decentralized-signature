@@ -1,9 +1,8 @@
 package kr.ac.postech.sslab.standard;
 
+import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import kr.ac.postech.sslab.nft.NFT;
-import org.hyperledger.fabric.shim.Chaincode.Response;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import org.json.simple.parser.ParseException;
@@ -11,7 +10,7 @@ import org.json.simple.parser.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ERC721 implements IERC721 {
+public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	private BaseNFT baseNFT = new BaseNFT();
 
 	@Override
@@ -24,9 +23,9 @@ public class ERC721 implements IERC721 {
 			String owner = args.get(0).toLowerCase();
 			long ownedTokensCount = this.getBalance(stub, owner);
 
-			return ResponseUtils.newSuccessResponse(Long.toString(ownedTokensCount));
+			return newSuccessResponse(Long.toString(ownedTokensCount));
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -80,9 +79,9 @@ public class ERC721 implements IERC721 {
 
 			boolean result = this.isOperator(stub, owner, operator);
 
-			return ResponseUtils.newSuccessResponse(Boolean.toString(result));
+			return newSuccessResponse(Boolean.toString(result));
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 
@@ -118,7 +117,7 @@ public class ERC721 implements IERC721 {
 
 			return this.baseNFT.mint(stub, newArgs);
 		} catch (Throwable throwable) {
-			return ResponseUtils.newErrorResponse(throwable.getMessage());
+			return newErrorResponse(throwable.getMessage());
 		}
 	}
 }

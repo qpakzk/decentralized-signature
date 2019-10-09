@@ -4,34 +4,17 @@ import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.standard.ERC721;
 import kr.ac.postech.sslab.standard.IBaseNFT;
 import kr.ac.postech.sslab.standard.IERC721;
-import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
 
 import java.util.*;
 
-public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
+public class Main extends ConcreteChaincodeBase implements IERC721, IBaseNFT {
     private ERC721 erc721 = new ERC721();
     private BaseNFT nft = new BaseNFT();
 
     @Override
     public Response init(ChaincodeStub stub) {
-        try {
-            String func = stub.getFunction();
-
-            if (!func.equals("init")) {
-                throw new Throwable("Functions other than init are not supported");
-            }
-
-            List<String> args = stub.getParameters();
-            if (args.size() != 0) {
-                throw new Throwable("Incorrect number of arguments. Expecting 0");
-            }
-
-            return ResponseUtils.newSuccessResponse();
-        } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
-        }
+        return super.init(stub);
     }
 
     @Override
@@ -100,7 +83,7 @@ public class Main extends ChaincodeBase implements IERC721, IBaseNFT {
             }
 
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 

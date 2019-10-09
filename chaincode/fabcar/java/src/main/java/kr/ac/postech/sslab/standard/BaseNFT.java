@@ -1,18 +1,17 @@
 package kr.ac.postech.sslab.standard;
 
 import kr.ac.postech.sslab.adapter.XAttr;
+import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.type.URI;
-import org.hyperledger.fabric.shim.Chaincode.Response;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ResponseUtils;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseNFT implements IBaseNFT {
+public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
@@ -34,9 +33,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
 
-            return ResponseUtils.newSuccessResponse("Success");
+            return newSuccessResponse("Success");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -54,9 +53,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             nft.burn(stub, id);
 
-            return ResponseUtils.newSuccessResponse("Success");
+            return newSuccessResponse("Success");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -72,9 +71,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             String type = nft.getType();
 
-            return ResponseUtils.newSuccessResponse(type);
+            return newSuccessResponse(type);
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -100,9 +99,9 @@ public class BaseNFT implements IBaseNFT {
 
             nft.setOwner(stub, receiver);
 
-            return ResponseUtils.newSuccessResponse("Success");
+            return newSuccessResponse("Success");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -119,9 +118,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             String owner = nft.getOwner();
 
-            return ResponseUtils.newSuccessResponse(owner);
+            return newSuccessResponse(owner);
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -155,7 +154,7 @@ public class BaseNFT implements IBaseNFT {
                     nft.setOperator(stub);
                 }
 
-                return ResponseUtils.newSuccessResponse(operator + " is added to operator of the token owned by " + caller);
+                return newSuccessResponse(operator + " is added to operator of the token owned by " + caller);
             }
             else {
                 while(resultsIterator.iterator().hasNext()) {
@@ -165,10 +164,10 @@ public class BaseNFT implements IBaseNFT {
                     nft.setOperator(stub);
                 }
 
-                return ResponseUtils.newSuccessResponse(operator + " is removed from operator of the token owned by " + caller);
+                return newSuccessResponse(operator + " is removed from operator of the token owned by " + caller);
             }
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -184,9 +183,9 @@ public class BaseNFT implements IBaseNFT {
 
             String operator = nft.getOperator().toString();
 
-            return ResponseUtils.newSuccessResponse(operator);
+            return newSuccessResponse(operator);
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -205,9 +204,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             nft.setApprovee(stub, approvee);
 
-            return ResponseUtils.newSuccessResponse("Success");
+            return newSuccessResponse("Success");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -223,9 +222,9 @@ public class BaseNFT implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             String approvee = nft.getApprovee();
 
-            return ResponseUtils.newSuccessResponse(approvee);
+            return newSuccessResponse(approvee);
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -256,9 +255,9 @@ public class BaseNFT implements IBaseNFT {
 
             nft.setURI(stub);
 
-            return ResponseUtils.newSuccessResponse("Success");
+            return newSuccessResponse("Success");
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 
@@ -270,7 +269,7 @@ public class BaseNFT implements IBaseNFT {
                     String id = args.get(0).toLowerCase();
                     NFT nft = NFT.read(stub, id);
                     URI uri = nft.getURI();
-                    return ResponseUtils.newSuccessResponse(uri.toJSONString());
+                    return newSuccessResponse(uri.toJSONString());
                 }
 
                 case 2: {
@@ -292,14 +291,14 @@ public class BaseNFT implements IBaseNFT {
                             throw new Throwable("Incorrect index. Expecting 0 or 1");
                     }
 
-                    return ResponseUtils.newSuccessResponse(attribute);
+                    return newSuccessResponse(attribute);
                 }
 
                 default:
                     throw new Throwable("Incorrect number of arguments. Expecting 1 or 2");
             }
         } catch (Throwable throwable) {
-            return ResponseUtils.newErrorResponse(throwable.getMessage());
+            return newErrorResponse(throwable.getMessage());
         }
     }
 }
