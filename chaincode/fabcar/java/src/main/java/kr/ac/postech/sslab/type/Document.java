@@ -64,30 +64,16 @@ public class Document implements IType {
                 return this.hash;
 
             case 1:
-                return this.toString(this.signers);
+                return this.signers.toString();
 
             case 2:
-                return this.toString(this.sigIds);
+                return this.sigIds.toString();
 
             case 3:
                 return Boolean.toString(this.activated);
         }
 
         return null;
-    }
-
-    private String toString(List<String> list) {
-        String result = "";
-
-        if (list.size() > 0) {
-            for (String item : list) {
-                result += (item + ",");
-            }
-
-            result = result.substring(0, result.length() - 1);
-        }
-
-        return result;
     }
 
     private List<String> toList(String string) {
