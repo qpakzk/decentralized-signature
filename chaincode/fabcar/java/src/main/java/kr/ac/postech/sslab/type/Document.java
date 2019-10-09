@@ -95,7 +95,6 @@ public class Document implements IType {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
