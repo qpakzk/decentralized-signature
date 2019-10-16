@@ -16,7 +16,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	public Response balanceOf(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1.");
+				throw new Throwable("FAILURE");
 			}
 
 			String owner = args.get(0).toLowerCase();
@@ -24,7 +24,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 
 			return newSuccessResponse(Long.toString(ownedTokensCount));
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
@@ -70,7 +70,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	public Response isApprovedForAll(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
+				throw new Throwable("FAILURE");
 			}
 
 			String owner = args.get(0).toLowerCase();
@@ -78,9 +78,9 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 
 			boolean result = this.isOperator(stub, owner, operator);
 
-			return newSuccessResponse(Boolean.toString(result));
+			return newSuccessResponse(Boolean.toString(result).toUpperCase());
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
@@ -102,7 +102,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	public Response mint(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
+				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
@@ -116,7 +116,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 
 			return this.baseNFT.mint(stub, newArgs);
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 }

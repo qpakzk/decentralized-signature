@@ -20,7 +20,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 
 			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1 or 2.");
+				throw new Throwable("FAILURE");
 			}
 
 			String owner = args.get(0).toLowerCase();
@@ -30,7 +30,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			return newSuccessResponse(Long.toString(ownedTokensCount));
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
@@ -55,7 +55,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	public Response divide(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 2) {
-				throw new Throwable("Incorrect number of arguments. Expecting 2");
+				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
@@ -68,9 +68,9 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			dup.setOperator(stub, nft.getOperator());
 			dup.setApprovee(stub, nft.getApprovee());
 
-			return newSuccessResponse();
+			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
@@ -78,7 +78,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
     public Response deactivate(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
+				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
@@ -86,18 +86,17 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			NFT nft = NFT.read(stub, id);
 			nft.setXAttr(stub, 3, null);
 
-			return newSuccessResponse();
+			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
     public Response query(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
+				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
@@ -117,7 +116,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String query = mapper.writeValueAsString(map);
 			return newSuccessResponse(query);
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 
@@ -125,7 +124,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
     public Response queryHistory(ChaincodeStub stub, List<String> args) {
 		try {
 			if (args.size() != 1) {
-				throw new Throwable("Incorrect number of arguments. Expecting 1");
+				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
@@ -143,7 +142,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			}
 			return newSuccessResponse(result);
 		} catch (Throwable throwable) {
-			return newErrorResponse(throwable.getMessage());
+			return newErrorResponse("FAILURE");
 		}
 	}
 }

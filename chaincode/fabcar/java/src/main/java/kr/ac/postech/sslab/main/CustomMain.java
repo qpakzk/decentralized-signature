@@ -58,7 +58,7 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
             }
 
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -115,10 +115,10 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     return this.sig.getURI(stub, args);
 
                 default:
-                    throw new Throwable("error");
+                    throw new Throwable("FAILURE");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -135,10 +135,10 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     return this.sig.setURI(stub, args);
 
                 default:
-                    throw new Throwable("error");
+                    throw new Throwable("FAILURE");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -155,10 +155,10 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     return this.sig.setXAttr(stub, args);
 
                 default:
-                    throw  new Throwable("error");
+                    throw  new Throwable("FAILURE");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -175,10 +175,10 @@ public class CustomMain extends Main implements IEERC721, IXNFT {
                     return this.sig.getXAttr(stub, args);
 
                 default:
-                    throw  new Throwable("error");
+                    throw  new Throwable("FAILURE");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 

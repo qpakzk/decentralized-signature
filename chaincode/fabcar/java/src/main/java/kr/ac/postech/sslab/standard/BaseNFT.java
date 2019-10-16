@@ -16,7 +16,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -33,9 +33,9 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
 
-            return newSuccessResponse("Success");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -43,7 +43,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response burn(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 1) {
-                throw new Throwable("Incorrect number of arguments. Expecting 1");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -53,9 +53,9 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             nft.burn(stub, id);
 
-            return newSuccessResponse("Success");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -63,7 +63,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response getType(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 1) {
-                throw new Throwable("Incorrect number of arguments. Expecting 1");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -73,7 +73,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             return newSuccessResponse(type);
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -82,7 +82,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response setOwner(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
+                throw new Throwable("FAILURE");
             }
 
             String sender = args.get(0).toLowerCase();
@@ -92,16 +92,16 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
 
             if (!sender.equals(nft.getOwner())) {
-                throw new Throwable("Transfer of token that is not own");
+                throw new Throwable("FAILURE");
             }
 
             //Check Client Identity
 
             nft.setOwner(stub, receiver);
 
-            return newSuccessResponse("Success");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -110,7 +110,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response getOwner(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 1) {
-                throw new Throwable("Incorrect number of arguments. Expecting 1");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -120,7 +120,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             return newSuccessResponse(owner);
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -129,7 +129,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
         try {
             //should be modified as 2 arguments
             if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
+                throw new Throwable("FAILURE");
             }
 
             //caller should be deleted
@@ -138,7 +138,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             boolean approved = Boolean.parseBoolean(args.get(2));
 
             if (operator.equals(caller)) {
-                throw new Throwable("Operator shouldn't be the same as owner");
+                throw new Throwable("FAILURE");
             }
 
             //Check Client Identity
@@ -154,7 +154,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                     nft.setOperator(stub);
                 }
 
-                return newSuccessResponse(operator + " is added to operator of the token owned by " + caller);
+                return newSuccessResponse("SUCCESS");
             }
             else {
                 while(resultsIterator.iterator().hasNext()) {
@@ -164,10 +164,10 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                     nft.setOperator(stub);
                 }
 
-                return newSuccessResponse(operator + " is removed from operator of the token owned by " + caller);
+                return newSuccessResponse("SUCCESS");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -175,7 +175,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response getOperator(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 1) {
-                throw new Throwable("Incorrect number of arguments. Expecting 1");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -185,7 +185,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             return newSuccessResponse(operator);
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -193,7 +193,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response setApprovee(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 2) {
-                throw new Throwable("Incorrect number of arguments. Expecting 2");
+                throw new Throwable("FAILURE");
             }
 
             String approvee = args.get(0).toLowerCase();
@@ -204,9 +204,9 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             NFT nft = NFT.read(stub, id);
             nft.setApprovee(stub, approvee);
 
-            return newSuccessResponse("Success");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -214,7 +214,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     public Response getApprovee(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 1) {
-                throw new Throwable("Incorrect number of arguments. Expecting 1");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -224,7 +224,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             return newSuccessResponse(approvee);
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 }

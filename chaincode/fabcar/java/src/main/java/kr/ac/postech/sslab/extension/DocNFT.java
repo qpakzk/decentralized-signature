@@ -12,7 +12,7 @@ public class DocNFT extends XNFT {
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 7) {
-                throw new Throwable("Incorrect number of arguments. Expecting 7");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -35,9 +35,9 @@ public class DocNFT extends XNFT {
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);
 
-            return newSuccessResponse("Mint a token " + nft.getId());
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 }

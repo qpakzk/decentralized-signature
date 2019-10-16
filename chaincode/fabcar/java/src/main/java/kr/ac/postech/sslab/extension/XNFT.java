@@ -12,7 +12,7 @@ public class XNFT extends BaseNFT implements IXNFT {
     public Response setURI(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -35,9 +35,9 @@ public class XNFT extends BaseNFT implements IXNFT {
 
             nft.setURI(stub);
 
-            return newSuccessResponse("Success");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -68,17 +68,17 @@ public class XNFT extends BaseNFT implements IXNFT {
                             break;
 
                         default:
-                            throw new Throwable("Incorrect index. Expecting 0 or 1");
+                            throw new Throwable("FAILURE");
                     }
 
                     return newSuccessResponse(attribute);
                 }
 
                 default:
-                    throw new Throwable("Incorrect number of arguments. Expecting 1 or 2");
+                    throw new Throwable("FAILURE");
             }
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -86,7 +86,7 @@ public class XNFT extends BaseNFT implements IXNFT {
     public Response setXAttr(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 3) {
-                throw new Throwable("Incorrect number of arguments. Expecting 3");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -96,9 +96,9 @@ public class XNFT extends BaseNFT implements IXNFT {
             NFT nft = NFT.read(stub, id);
             nft.setXAttr(stub, index, attr);
 
-            return newSuccessResponse("Set a token attribute");
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 
@@ -106,7 +106,7 @@ public class XNFT extends BaseNFT implements IXNFT {
     public Response getXAttr(ChaincodeStub stub, List<String> args) {
         try {
             if (args.size() != 2) {
-                throw new Throwable("Incorrect number of arguments. Expecting 2");
+                throw new Throwable("FAILURE");
             }
 
             String id = args.get(0).toLowerCase();
@@ -116,7 +116,7 @@ public class XNFT extends BaseNFT implements IXNFT {
 
             return newSuccessResponse(nft.getXAttr(index));
         } catch (Throwable throwable) {
-            return newErrorResponse(throwable.getMessage());
+            return newErrorResponse("FAILURE");
         }
     }
 }
