@@ -34,11 +34,11 @@ public class NFT {
         this.uri = uri;
     }
 
-    public void mint(ChaincodeStub stub, String id, String type, String owner, XAttr xattr, URI uri) throws JsonProcessingException {
+    public void mint(ChaincodeStub stub, String id, String type, String owner, Operator operator, XAttr xattr, URI uri) throws JsonProcessingException {
         this.id = id;
         this.type = type;
         this.owner = owner;
-        this.operator = new Operator();
+        this.operator = operator;
         this.approvee = "";
         this.xattr = xattr;
         this.uri = uri;

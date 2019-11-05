@@ -64,7 +64,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			NFT nft = NFT.read(stub, id);
 
 			NFT dup = new NFT();
-			dup.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getXAttr(), nft.getURI());
+			dup.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getOperator(), nft.getXAttr(), nft.getURI());
 			dup.setOperator(stub, nft.getOperator());
 			dup.setApprovee(stub, nft.getApprovee());
 

@@ -3,11 +3,13 @@ package kr.ac.postech.sslab.standard;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import kr.ac.postech.sslab.nft.NFT;
+import kr.ac.postech.sslab.type.Operator;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String id = args.get(0).toLowerCase();
             String type = args.get(1).toLowerCase();
             String owner = args.get(2).toLowerCase();
+            Operator operator = this.getOperatorsForOwner(stub, owner);
 
             XAttr xattr = new XAttr();
             xattr.assign(type, new ArrayList<String>());
@@ -31,12 +34,22 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             //Check Client Identity
 
             NFT nft = new NFT();
-            nft.mint(stub, id, type, owner, xattr, uri);
-
+            nft.mint(stub, id, type, owner, operator, xattr, uri);
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }
+    }
+
+    protected Operator getOperatorsForOwner(ChaincodeStub stub, String owner) throws IOException {
+        String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
+        QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
+        if(resultsIterator.iterator().hasNext()) {
+            String id = resultsIterator.iterator().next().getKey();
+            return NFT.read(stub, id).getOperator();
+        }
+
+        return new Operator();
     }
 
     @Override
@@ -98,6 +111,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             //Check Client Identity
 
             nft.setOwner(stub, receiver);
+            nft.setOperator(stub, this.getOperatorsForOwner(stub, receiver));
 
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
