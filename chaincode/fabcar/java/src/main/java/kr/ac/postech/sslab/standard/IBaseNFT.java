@@ -11,8 +11,8 @@ public interface IBaseNFT {
     Response getType(ChaincodeStub stub, List<String> args);
     Response setOwner(ChaincodeStub stub, List<String> args);
     Response getOwner(ChaincodeStub stub, List<String> args);
-    Response setOperator(ChaincodeStub stub, List<String> args);
-    Response getOperator(ChaincodeStub stub, List<String> args);
+    Response setOperatorForCaller(ChaincodeStub stub, List<String> args);
+    Response isOperatorForCaller(ChaincodeStub stub, List<String> args);
     Response setApprovee(ChaincodeStub stub, List<String> args);
     Response getApprovee(ChaincodeStub stub, List<String> args);
 }

@@ -1,11 +1,9 @@
 package kr.ac.postech.sslab.standard;
 
 import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
-import kr.ac.postech.sslab.nft.NFT;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +56,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	
 	@Override
 	public Response setApprovalForAll(ChaincodeStub stub, List<String> args) {
-		return this.baseNFT.setOperator(stub, args);
+		return this.baseNFT.setOperatorForCaller(stub, args);
 	}
 
 	@Override
@@ -68,35 +66,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 
 	@Override
 	public Response isApprovedForAll(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 2) {
-				throw new Throwable("FAILURE");
-			}
-
-			String owner = args.get(0).toLowerCase();
-			String operator = args.get(1).toLowerCase();
-
-			boolean result = this.isOperator(stub, owner, operator);
-
-			return newSuccessResponse(Boolean.toString(result).toUpperCase());
-		} catch (Throwable throwable) {
-			return newErrorResponse("FAILURE");
-		}
-	}
-
-	private boolean isOperator(ChaincodeStub stub, String owner, String operator) throws IOException {
-		String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
-		QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
-
-		while(resultsIterator.iterator().hasNext()) {
-			String id = resultsIterator.iterator().next().getKey();
-			NFT nft = NFT.read(stub, id);
-			if(!nft.getOperator().existOperator(operator)) {
-				return false;
-			}
-		}
-
-		return true;
+		return this.baseNFT.isOperatorForCaller(stub, args);
 	}
 
 	public Response mint(ChaincodeStub stub, List<String> args) {

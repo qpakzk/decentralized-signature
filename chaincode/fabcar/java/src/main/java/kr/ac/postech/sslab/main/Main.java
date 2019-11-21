@@ -60,11 +60,11 @@ public class Main extends ConcreteChaincodeBase implements IERC721, IBaseNFT {
                 case "getOwner":
                     return this.getOwner(stub, args);
 
-                case "setOperator":
-                    return this.setOperator(stub, args);
+                case "setOperatorForCaller":
+                    return this.setOperatorForCaller(stub, args);
 
-                case "getOperator":
-                    return this.getOperator(stub, args);
+                case "isOperatorForCaller":
+                    return this.isOperatorForCaller(stub, args);
 
                 case "setApprovee":
                     return this.setApprovee(stub, args);
@@ -146,13 +146,13 @@ public class Main extends ConcreteChaincodeBase implements IERC721, IBaseNFT {
     }
 
     @Override
-    public Response setOperator(ChaincodeStub stub, List<String> args) {
-        return this.nft.setOperator(stub, args);
+    public Response setOperatorForCaller(ChaincodeStub stub, List<String> args) {
+        return this.nft.setOperatorForCaller(stub, args);
     }
 
     @Override
-    public Response getOperator(ChaincodeStub stub, List<String> args) {
-        return this.nft.getOperator(stub, args);
+    public Response isOperatorForCaller(ChaincodeStub stub, List<String> args) {
+        return this.nft.isOperatorForCaller(stub, args);
     }
 
     @Override

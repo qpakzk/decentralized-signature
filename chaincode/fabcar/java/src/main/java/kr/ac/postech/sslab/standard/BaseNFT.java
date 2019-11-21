@@ -3,13 +3,8 @@ package kr.ac.postech.sslab.standard;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import kr.ac.postech.sslab.nft.NFT;
-import kr.ac.postech.sslab.type.Operator;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.KeyValue;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +19,6 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String id = args.get(0).toLowerCase();
             String type = args.get(1).toLowerCase();
             String owner = args.get(2).toLowerCase();
-            Operator operator = this.getOperatorsForOwner(stub, owner);
 
             XAttr xattr = new XAttr();
             xattr.assign(type, new ArrayList<String>());
@@ -34,22 +28,11 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             //Check Client Identity
 
             NFT nft = new NFT();
-            nft.mint(stub, id, type, owner, operator, xattr, uri);
+            nft.mint(stub, id, type, owner, xattr, uri);
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }
-    }
-
-    protected Operator getOperatorsForOwner(ChaincodeStub stub, String owner) throws IOException {
-        String query = "{\"selector\":{\"owner\":\"" + owner + "\"}}";
-        QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
-        if(resultsIterator.iterator().hasNext()) {
-            String id = resultsIterator.iterator().next().getKey();
-            return NFT.read(stub, id).getOperator();
-        }
-
-        return new Operator();
     }
 
     @Override
@@ -111,7 +94,6 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             //Check Client Identity
 
             nft.setOwner(stub, receiver);
-            nft.setOperator(stub, this.getOperatorsForOwner(stub, receiver));
 
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
@@ -139,7 +121,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     }
 
     @Override
-    public Response setOperator(ChaincodeStub stub, List<String> args) {
+    public Response setOperatorForCaller(ChaincodeStub stub, List<String> args) {
         try {
             //should be modified as 2 arguments
             if (args.size() != 3) {
@@ -155,49 +137,31 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
+            if (this.getOperatorsApproval() == null) {
+                throw new Throwable();
+            }
             //Check Client Identity
+            this.setOperatorsApproval(stub, caller, operator, approved);
 
-            String query = "{\"selector\":{\"owner\":\"" + caller + "\"}}";
-            QueryResultsIterator<KeyValue> resultsIterator = stub.getQueryResult(query);
-
-            if (approved) {
-                while(resultsIterator.iterator().hasNext()) {
-                    String id = resultsIterator.iterator().next().getKey();
-                    NFT nft = NFT.read(stub, id);
-                    nft.getOperator().add(operator);
-                    nft.setOperator(stub);
-                }
-
-                return newSuccessResponse("SUCCESS");
-            }
-            else {
-                while(resultsIterator.iterator().hasNext()) {
-                    String id = resultsIterator.iterator().next().getKey();
-                    NFT nft = NFT.read(stub, id);
-                    nft.getOperator().remove(operator);
-                    nft.setOperator(stub);
-                }
-
-                return newSuccessResponse("SUCCESS");
-            }
+            return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }
     }
 
     @Override
-    public Response getOperator(ChaincodeStub stub, List<String> args) {
+    public Response isOperatorForCaller(ChaincodeStub stub, List<String> args) {
         try {
-            if (args.size() != 1) {
+            if (args.size() != 2) {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
-            NFT nft = NFT.read(stub, id);
+            String owner = args.get(0).toLowerCase();
+            String operator = args.get(1).toLowerCase();
 
-            String operator = nft.getOperator().getOperators().toString();
+            boolean approved = this.isOperatorForOwner(owner, operator);
 
-            return newSuccessResponse(operator);
+            return newSuccessResponse(Boolean.toString(approved).toUpperCase());
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }

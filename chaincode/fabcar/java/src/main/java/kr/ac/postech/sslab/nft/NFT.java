@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.postech.sslab.adapter.XAttr;
-import kr.ac.postech.sslab.type.Operator;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,28 +15,25 @@ public class NFT {
     private String id;
     private String type;
     private String owner;
-    private Operator operator;
     private String approvee;
     private XAttr xattr;
     private URI uri;
 
     public NFT() {}
 
-    private NFT(String id, String type, String owner, Operator operator, String approvee, XAttr xattr, URI uri) {
+    private NFT(String id, String type, String owner, String approvee, XAttr xattr, URI uri) {
         this.id = id;
         this.type = type;
         this.owner = owner;
-        this.operator = operator;
         this.approvee = approvee;
         this.xattr = xattr;
         this.uri = uri;
     }
 
-    public void mint(ChaincodeStub stub, String id, String type, String owner, Operator operator, XAttr xattr, URI uri) throws JsonProcessingException {
+    public void mint(ChaincodeStub stub, String id, String type, String owner, XAttr xattr, URI uri) throws JsonProcessingException {
         this.id = id;
         this.type = type;
         this.owner = owner;
-        this.operator = operator;
         this.approvee = "";
         this.xattr = xattr;
         this.uri = uri;
@@ -53,7 +48,6 @@ public class NFT {
 
         String type = node.get("type").asText();
         String owner = node.get("owner").asText();
-        Operator operator = Operator.toList(node.get("operator").asText());
         String approvee = node.get("approvee").asText();
 
         XAttr xattr = new XAttr();
@@ -64,7 +58,7 @@ public class NFT {
         JsonNode uriNode = node.get("uri");
         uri.assign(uriNode.asText());
 
-        return new NFT(id, type, owner, operator, approvee, xattr, uri);
+        return new NFT(id, type, owner, approvee, xattr, uri);
     }
 
     public void burn(ChaincodeStub stub, String id) {
@@ -92,15 +86,6 @@ public class NFT {
         stub.putStringState(this.id, this.toJSONString());
     }
 
-    public void setOperator(ChaincodeStub stub, Operator operator) throws JsonProcessingException {
-        this.operator = operator;
-        stub.putStringState(this.id, this.toJSONString());
-    }
-
-    public Operator getOperator() {
-        return this.operator;
-    }
-
     public void setApprovee(ChaincodeStub stub, String approvee) throws JsonProcessingException {
         this.approvee = approvee;
         stub.putStringState(this.id, this.toJSONString());
@@ -118,6 +103,7 @@ public class NFT {
     public XAttr getXAttr() {
         return this.xattr;
     }
+
     public String getXAttr(int index) {
         return this.xattr.getXAttr(index);
     }
@@ -137,7 +123,6 @@ public class NFT {
         map.put("id", this.id);
         map.put("type", this.type);
         map.put("owner", this.owner);
-        map.put("operator", this.operator.toJSONArray());
         map.put("approvee", this.approvee);
         map.put("xattr", this.xattr.toJSONString());
         map.put("uri", this.uri.toJSONString());
