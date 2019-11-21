@@ -1,7 +1,6 @@
 package kr.ac.postech.sslab.extension;
 
 import org.hyperledger.fabric.shim.Chaincode.Response;
-import org.hyperledger.fabric.shim.ChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.List;
 

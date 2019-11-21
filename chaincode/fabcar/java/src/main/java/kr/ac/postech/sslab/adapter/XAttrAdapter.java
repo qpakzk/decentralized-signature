@@ -1,7 +1,6 @@
 package kr.ac.postech.sslab.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import kr.ac.postech.sslab.type.Base;
 import kr.ac.postech.sslab.type.IType;
 import kr.ac.postech.sslab.type.Document;
