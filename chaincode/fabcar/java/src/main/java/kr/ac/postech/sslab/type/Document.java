@@ -1,58 +1,90 @@
 package kr.ac.postech.sslab.type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class Document implements IType {
-    private String hash;
-    private List<String> signers;
-    private List<String> sigIds;
     private boolean activated;
+    private String parent;
+    private ArrayList<String> children;
+    private int pages;
+
+    private String hash;
+    private ArrayList<String> signers;
+    private ArrayList<String> sigIds;
 
     /*
     attr       | index
     ==================
-    hash       | 0
-    signers    | 1
-    sigIds     | 2
-    activated  | 3
+    activated  | 0
+    parent     | 1
+    children   | 2
+    pages      | 3
+    hash       | 4
+    signers    | 5
+    sigIds     | 6
     */
 
     @Override
-    public void assign(List<String> args) {
-        this.hash = args.get(0);
-        this.signers = this.toList(args.get(1));
-        this.sigIds = new ArrayList<>();
+    public void assign(ArrayList<String> args) {
         this.activated = true;
+        this.parent = "";
+        this.children = new ArrayList<>();
+        this.pages = Integer.parseInt(args.get(0));
+        this.hash = args.get(1);
+        this.signers = this.toList(args.get(2));
+        this.sigIds = new ArrayList<>();
     }
 
     @Override
     public void assign(String jsonString) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
+
+        this.activated = node.get("activated").asBoolean();
+        this.parent = node.get("parent").asText();
+
+        String childrenJsonArray = node.get("children").asText();
+        TypeReference typeArrayList = new TypeReference<ArrayList<String>>() {};
+        this.children = mapper.readValue(childrenJsonArray, typeArrayList);
+
+        this.pages = node.get("pages").asInt();
         this.hash = node.get("hash").asText();
 
         String signersJsonArray = node.get("signers").asText();
-        this.signers = mapper.readValue(signersJsonArray, List.class);
+        this.signers = mapper.readValue(signersJsonArray, typeArrayList);
 
         String sigIdsJsonArray = node.get("sigIds").asText();
-        this.sigIds = mapper.readValue(sigIdsJsonArray, ArrayList.class);
-
-        this.activated = node.get("activated").asBoolean();
+        this.sigIds = mapper.readValue(sigIdsJsonArray, typeArrayList);
     }
 
     @Override
     public void setXAttr(int index, String attr) {
         switch (index) {
+            case 0:
+                this.deactivate();
+                break;
+
+            case 1:
+                this.parent = attr;
+                break;
+
             case 2:
-                this.sigIds.add(attr);
+                this.children = this.toList(attr);
                 break;
 
             case 3:
-                this.deactivate();
+                this.pages = Integer.parseInt(attr);
+                break;
+
+            case 6:
+                this.sigIds.add(attr);
                 break;
         }
     }
@@ -61,22 +93,32 @@ public class Document implements IType {
     public String getXAttr(int index) {
         switch (index) {
             case 0:
-                return this.hash;
+                return Boolean.toString(this.activated);
 
             case 1:
-                return this.signers.toString();
+                return this.parent;
 
             case 2:
-                return this.sigIds.toString();
+                return this.children.toString();
 
             case 3:
-                return Boolean.toString(this.activated);
+                return Integer.toString(this.pages);
+
+            case 4:
+                return this.hash;
+
+            case 5:
+                return this.signers.toString();
+
+            case 6:
+                return this.sigIds.toString();
+
         }
 
         return null;
     }
 
-    private List<String> toList(String string) {
+    private ArrayList<String> toList(String string) {
         return new ArrayList<>(Arrays.asList(string.split(",")));
     }
 
@@ -84,16 +126,32 @@ public class Document implements IType {
     public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        Map<String, String> map = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("activated", Boolean.toString(this.activated));
+        map.put("parent", this.parent);
+        map.put("children", mapper.writeValueAsString(this.children));
+        map.put("pages", Integer.toString(this.pages));
         map.put("hash", this.hash);
         map.put("signers", mapper.writeValueAsString(this.signers));
         map.put("sigIds", mapper.writeValueAsString(this.sigIds));
-        map.put("activated", Boolean.toString(this.activated));
 
         return mapper.writeValueAsString(map);
     }
 
     private void deactivate() {
         this.activated = false;
+    }
+
+    public int getIndex(String attr) {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("activated", 0);
+        map.put("parent", 1);
+        map.put("children", 2);
+        map.put("pages", 3);
+        map.put("hash", 4);
+        map.put("signers", 5);
+        map.put("sigIds", 6);
+
+        return map.get(attr);
     }
 }
