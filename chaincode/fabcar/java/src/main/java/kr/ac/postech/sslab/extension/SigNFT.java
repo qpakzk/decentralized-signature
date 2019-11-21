@@ -20,15 +20,15 @@ public class SigNFT extends XNFT {
             String owner = args.get(2).toLowerCase();
             String hash = args.get(3).toLowerCase();
             String path = args.get(4).toLowerCase();
-            String offChainHash = args.get(5).toLowerCase();
+            String merkleroot = args.get(5).toLowerCase();
 
             XAttr xattr = new XAttr();
-            List<String> list = new ArrayList<>();
+            ArrayList<String> list = new ArrayList<>();
             list.add(hash);
 
             xattr.assign(type, list);
 
-            URI uri = new URI(path, offChainHash);
+            URI uri = new URI(path, merkleroot);
 
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, xattr, uri);

@@ -5,9 +5,8 @@ import kr.ac.postech.sslab.type.Base;
 import kr.ac.postech.sslab.type.IType;
 import kr.ac.postech.sslab.type.Document;
 import kr.ac.postech.sslab.type.Signature;
-
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 public class XAttrAdapter implements IXAttr {
     private IType xattr;
@@ -29,7 +28,7 @@ public class XAttrAdapter implements IXAttr {
         }
     }
 
-    public void assign(List<String> args) {
+    public void assign(ArrayList<String> args) {
         this.xattr.assign(args);
     }
 

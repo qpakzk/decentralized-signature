@@ -1,10 +1,10 @@
 package kr.ac.postech.sslab.type;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Base implements IType {
     @Override
-    public void assign(List<String> args) {
+    public void assign(ArrayList<String> args) {
     }
 
     @Override

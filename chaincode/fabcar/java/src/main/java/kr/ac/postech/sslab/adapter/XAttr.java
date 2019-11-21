@@ -1,14 +1,13 @@
 package kr.ac.postech.sslab.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 public class XAttr implements IXAttr {
     private XAttrAdapter adapter;
 
-    public void assign(String type, List<String> args) {
+    public void assign(String type, ArrayList<String> args) {
         this.adapter = new XAttrAdapter(type);
         this.adapter.assign(args);
     }
