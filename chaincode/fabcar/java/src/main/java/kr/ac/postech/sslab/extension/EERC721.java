@@ -1,7 +1,9 @@
 package kr.ac.postech.sslab.extension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
+import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 
 import java.io.IOException;
@@ -75,7 +77,16 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			for (int i = 0; i < 2; i++) {
 				child[i] = new NFT();
-				child[i].mint(stub, newIds[i], nft.getType(), nft.getOwner(), nft.getXAttr(), nft.getURI());
+
+				String xattrJsonString = nft.getXAttr().toJSONString();
+				XAttr xattr = new XAttr();
+				xattr.assign(nft.getType(), xattrJsonString);
+
+				String uriJsonString = nft.getURI().toJSONString();
+				URI uri = new URI();
+				uri.assign(uriJsonString);
+
+				child[i].mint(stub, newIds[i], nft.getType(), nft.getOwner(), xattr, uri);
 				child[i].setXAttr(stub, index, values[i]); // division point
 				child[i].setXAttr(stub, 1, nft.getId()); // parent
 			}
@@ -83,7 +94,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			nft.setXAttr(stub, 0, null); //deactivate
 			nft.setXAttr(stub, 2, newIds[0] + "," + newIds[1]); // children
 
-			return newSuccessResponse("SUCCESS");
+			return newSuccessResponse(Arrays.toString(newIds));
 		} catch (Throwable throwable) {
 			return newErrorResponse("FAILURE");
 		}
