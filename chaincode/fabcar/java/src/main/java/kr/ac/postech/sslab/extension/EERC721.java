@@ -54,18 +54,34 @@ public class EERC721 extends ERC721 implements IEERC721 {
 	@Override
 	public Response divide(ChaincodeStub stub, List<String> args) {
 		try {
-			if (args.size() != 2) {
+			if (args.size() != 4) {
 				throw new Throwable("FAILURE");
 			}
 
 			String id = args.get(0).toLowerCase();
-			String newId = args.get(1).toLowerCase();
+			String[] newIds = args.get(1)
+					.replace("[", "").replace("]", "").split(", ");
+			String[] values = args.get(2)
+					.replace("[", "").replace("]", "").split(", ");
+			int index = Integer.parseInt(args.get(3));
+
+			if (newIds.length != 2 || values.length != 2) {
+				throw new Throwable();
+			}
 
 			NFT nft = NFT.read(stub, id);
 
-			NFT dup = new NFT();
-			dup.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getXAttr(), nft.getURI());
-			dup.setApprovee(stub, nft.getApprovee());
+			NFT[] child = new NFT[2];
+
+			for (int i = 0; i < 2; i++) {
+				child[i] = new NFT();
+				child[i].mint(stub, newIds[i], nft.getType(), nft.getOwner(), nft.getXAttr(), nft.getURI());
+				child[i].setXAttr(stub, index, values[i]); // division point
+				child[i].setXAttr(stub, 1, nft.getId()); // parent
+			}
+
+			nft.setXAttr(stub, 0, null); //deactivate
+			nft.setXAttr(stub, 2, newIds[0] + "," + newIds[1]); // children
 
 			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
