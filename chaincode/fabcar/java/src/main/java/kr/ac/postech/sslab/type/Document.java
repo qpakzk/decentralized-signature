@@ -141,17 +141,4 @@ public class Document implements IType {
     private void deactivate() {
         this.activated = false;
     }
-
-    public int getIndex(String attr) {
-        HashMap<String, Integer> map = new HashMap<>();
-        map.put("activated", 0);
-        map.put("parent", 1);
-        map.put("children", 2);
-        map.put("pages", 3);
-        map.put("hash", 4);
-        map.put("signers", 5);
-        map.put("sigIds", 6);
-
-        return map.get(attr);
-    }
 }
