@@ -143,18 +143,13 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			String id = args.get(0).toLowerCase();
 
-			List<String> history = new LinkedList<>();
+			List<String> histories = new LinkedList<>();
 			QueryResultsIterator<KeyModification> resultsIterator = stub.getHistoryForKey(id);
 			while (resultsIterator.iterator().hasNext()) {
-				history.add(resultsIterator.iterator().next().getStringValue());
+				histories.add(resultsIterator.iterator().next().getStringValue());
 			}
 
-			Iterator<String> it = history.iterator();
-			String result = "";
-			while (it.hasNext()) {
-				result += (it.next() + "  ");
-			}
-			return newSuccessResponse(result);
+			return newSuccessResponse(histories.toString());
 		} catch (Throwable throwable) {
 			return newErrorResponse("FAILURE");
 		}
