@@ -64,8 +64,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			NFT nft = NFT.read(stub, id);
 
 			NFT dup = new NFT();
-			dup.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getOperator(), nft.getXAttr(), nft.getURI());
-			dup.setOperator(stub, nft.getOperator());
+			dup.mint(stub, newId, nft.getType(), nft.getOwner(), nft.getXAttr(), nft.getURI());
 			dup.setApprovee(stub, nft.getApprovee());
 
 			return newSuccessResponse("SUCCESS");
@@ -108,7 +107,6 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			map.put("id", nft.getId());
 			map.put("type", nft.getType());
 			map.put("owner", nft.getOwner());
-			map.put("operator", nft.getOperator().toJSONArray());
 			map.put("approvee", nft.getApprovee());
 			map.put("xattr", nft.getXAttr().toJSONString());
 			map.put("uri", nft.getURI().toJSONString());

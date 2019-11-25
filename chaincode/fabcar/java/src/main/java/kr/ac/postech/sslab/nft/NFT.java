@@ -82,10 +82,6 @@ public class NFT {
         return this.owner;
     }
 
-    public void setOperator(ChaincodeStub stub) throws JsonProcessingException {
-        stub.putStringState(this.id, this.toJSONString());
-    }
-
     public void setApprovee(ChaincodeStub stub, String approvee) throws JsonProcessingException {
         this.approvee = approvee;
         stub.putStringState(this.id, this.toJSONString());
