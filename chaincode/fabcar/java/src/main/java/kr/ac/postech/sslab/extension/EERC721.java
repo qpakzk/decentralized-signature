@@ -110,7 +110,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String id = args.get(0).toLowerCase();
 
 			NFT nft = NFT.read(stub, id);
-			nft.setXAttr(stub, 3, null);
+			nft.setXAttr(stub, 0, null);
 
 			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
