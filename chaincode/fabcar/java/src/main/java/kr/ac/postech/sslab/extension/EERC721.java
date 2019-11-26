@@ -94,7 +94,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			nft.setXAttr(stub, 0, null); //deactivate
 			nft.setXAttr(stub, 2, newIds[0] + "," + newIds[1]); // children
 
-			return newSuccessResponse(Arrays.toString(newIds));
+			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
 			return newErrorResponse("FAILURE");
 		}
