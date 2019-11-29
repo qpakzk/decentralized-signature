@@ -31,12 +31,12 @@ public class XAttrAdapter implements IXAttr {
     }
 
     @Override
-    public void setXAttr(int index, String attr) {
-        this.xattr.setXAttr(index, attr);
+    public void setXAttr(String index, String value) {
+        this.xattr.setXAttr(index, value);
     }
 
     @Override
-    public String getXAttr(int index) {
+    public String getXAttr(String index) {
         return this.xattr.getXAttr(index);
     }
 

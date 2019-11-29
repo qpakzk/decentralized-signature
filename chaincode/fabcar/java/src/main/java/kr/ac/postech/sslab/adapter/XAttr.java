@@ -17,12 +17,12 @@ public class XAttr implements IXAttr {
     }
 
     @Override
-    public void setXAttr(int index, String attr) {
-        this.adapter.setXAttr(index, attr);
+    public void setXAttr(String index, String value) {
+        this.adapter.setXAttr(index, value);
     }
 
     @Override
-    public String getXAttr(int index) {
+    public String getXAttr(String index) {
         return this.adapter.getXAttr(index);
     }
 

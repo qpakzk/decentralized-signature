@@ -99,21 +99,54 @@ public class NFT {
         return this.approvee;
     }
 
-    public void setXAttr(ChaincodeStub stub, int index, String attr) throws JsonProcessingException {
-        this.xattr.setXAttr(index, attr);
+    public void setXAttr(ChaincodeStub stub, String index, String value) throws JsonProcessingException {
+        this.xattr.setXAttr(index, value);
         stub.putStringState(this.id, this.toJSONString());
+    }
+
+    public void setXAttr(ChaincodeStub stub, XAttr xattr) throws JsonProcessingException {
+        this.xattr = xattr;
+        stub.putStringState(this.id, this.toJSONString());
+    }
+
+    public String getXAttr(String index) {
+        return this.xattr.getXAttr(index);
     }
 
     public XAttr getXAttr() {
         return this.xattr;
     }
 
-    public String getXAttr(int index) {
-        return this.xattr.getXAttr(index);
+    public void setURI(ChaincodeStub stub, String index, String value) throws JsonProcessingException {
+        switch (index) {
+            case "path":
+                this.uri.setPath(value);
+                break;
+
+            case "hash":
+                this.uri.setHash(value);
+                break;
+        }
+
+        stub.putStringState(this.id, this.toJSONString());
     }
 
-    public void setURI(ChaincodeStub stub) throws JsonProcessingException {
+    public void setURI(ChaincodeStub stub, URI uri) throws JsonProcessingException {
+        this.uri = uri;
         stub.putStringState(this.id, this.toJSONString());
+    }
+
+    public String getURI(String index) {
+        switch (index) {
+            case "path":
+                return this.uri.getPath();
+
+            case "hash":
+                return uri.getHash();
+
+            default:
+                return null;
+        }
     }
 
     public URI getURI() {

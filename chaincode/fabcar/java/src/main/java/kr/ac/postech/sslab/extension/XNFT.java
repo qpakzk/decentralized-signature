@@ -17,8 +17,8 @@ public class XNFT extends BaseNFT implements IXNFT {
             }
 
             String id = args.get(0);
-            int index = Integer.parseInt(args.get(1));
-            String attribute = args.get(2);
+            String index = args.get(1);
+            String value = args.get(2);
 
             //Check Client Identity
 
@@ -28,17 +28,7 @@ public class XNFT extends BaseNFT implements IXNFT {
             if (uri == null)
                 throw new Throwable();
 
-            switch (index) {
-                case 0:
-                    uri.setPath(attribute);
-                    break;
-
-                case 1:
-                    uri.setHash(attribute);
-                    break;
-            }
-
-            nft.setURI(stub);
+            nft.setURI(stub, index, value);
 
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
@@ -50,26 +40,17 @@ public class XNFT extends BaseNFT implements IXNFT {
     public Response getURI(ChaincodeStub stub, List<String> args) {
         try {
             String id = args.get(0);
-            int index = Integer.parseInt(args.get(1));
+            String index = args.get(1);
             NFT nft = NFT.read(stub, id);
 
             URI uri = nft.getURI();
             if (uri == null)
                 throw new Throwable();
 
-            String value;
-            switch (index) {
-                case 0:
-                    value = uri.getPath();
-                    break;
+            String value = nft.getURI(index);
 
-                case 1:
-                    value = uri.getHash();
-                    break;
-
-                default:
-                    throw new Throwable();
-            }
+            if (value == null)
+                throw new Throwable();
 
             return newSuccessResponse(value);
         } catch (Throwable throwable) {
@@ -85,8 +66,8 @@ public class XNFT extends BaseNFT implements IXNFT {
             }
 
             String id = args.get(0);
-            int index = Integer.parseInt(args.get(1));
-            String attr  = args.get(2);
+            String index = args.get(1);
+            String value  = args.get(2);
 
             NFT nft = NFT.read(stub, id);
 
@@ -94,7 +75,7 @@ public class XNFT extends BaseNFT implements IXNFT {
             if (xattr == null)
                 throw new Throwable();
 
-            nft.setXAttr(stub, index, attr);
+            nft.setXAttr(stub, index, value);
 
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
@@ -110,7 +91,7 @@ public class XNFT extends BaseNFT implements IXNFT {
             }
 
             String id = args.get(0);
-            int index = Integer.parseInt(args.get(1));
+            String index = args.get(1);
 
             NFT nft = NFT.read(stub, id);
 

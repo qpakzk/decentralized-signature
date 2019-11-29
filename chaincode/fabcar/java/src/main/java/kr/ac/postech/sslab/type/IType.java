@@ -7,8 +7,8 @@ import java.util.Map;
 public interface IType {
     void assign(ArrayList<String> args);
     void assign(Map<String, Object> map);
-    void setXAttr(int index, String attr);
-    String getXAttr(int index);
+    void setXAttr(String index, String value);
+    String getXAttr(String index);
     String toJSONString() throws JsonProcessingException;
     Map<String, Object> toMap();
 }

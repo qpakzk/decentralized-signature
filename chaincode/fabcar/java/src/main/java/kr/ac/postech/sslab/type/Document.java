@@ -17,18 +17,6 @@ public class Document implements IType {
     private ArrayList<String> signers;
     private ArrayList<String> sigIds;
 
-    /*
-    attr       | index
-    ==================
-    activated  | 0
-    parent     | 1
-    children   | 2
-    pages      | 3
-    hash       | 4
-    signers    | 5
-    sigIds     | 6
-    */
-
     @Override
     public void assign(ArrayList<String> args) {
         this.activated = true;
@@ -52,54 +40,53 @@ public class Document implements IType {
     }
 
     @Override
-    public void setXAttr(int index, String attr) {
+    public void setXAttr(String index, String value) {
         switch (index) {
-            case 0:
+            case "activated":
                 this.deactivate();
                 break;
 
-            case 1:
-                this.parent = attr;
+            case "parent":
+                this.parent = value;
                 break;
 
-            case 2:
-                this.children = this.toList(attr);
+            case "children":
+                this.children = this.toList(value);
                 break;
 
-            case 3:
-                this.pages = Integer.parseInt(attr);
+            case "pages":
+                this.pages = Integer.parseInt(value);
                 break;
 
-            case 6:
-                this.sigIds.add(attr);
+            case "sigIds":
+                this.sigIds.add(value);
                 break;
         }
     }
 
     @Override
-    public String getXAttr(int index) {
+    public String getXAttr(String index) {
         switch (index) {
-            case 0:
+            case "activated":
                 return Boolean.toString(this.activated);
 
-            case 1:
+            case "parent":
                 return this.parent;
 
-            case 2:
+            case "children":
                 return this.children.toString();
 
-            case 3:
+            case "pages":
                 return Integer.toString(this.pages);
 
-            case 4:
+            case "hash":
                 return this.hash;
 
-            case 5:
+            case "signers":
                 return this.signers.toString();
 
-            case 6:
+            case "sigIds":
                 return this.sigIds.toString();
-
         }
 
         return null;

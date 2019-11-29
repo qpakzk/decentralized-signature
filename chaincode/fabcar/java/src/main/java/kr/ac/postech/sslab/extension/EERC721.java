@@ -64,7 +64,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 					.replace("[", "").replace("]", "").split(", ");
 			String[] values = args.get(2)
 					.replace("[", "").replace("]", "").split(", ");
-			int index = Integer.parseInt(args.get(3));
+			String index = args.get(3);
 
 			if (newIds.length != 2 || values.length != 2) {
 				throw new Throwable();
@@ -86,12 +86,12 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				uri.assign(uriMap);
 
 				child[i].mint(stub, newIds[i], nft.getType(), nft.getOwner(), xattr, uri);
-				child[i].setXAttr(stub, index, values[i]); // division point
-				child[i].setXAttr(stub, 1, nft.getId()); // parent
+				child[i].setXAttr(stub, index, values[i]);
+				child[i].setXAttr(stub, "parent", nft.getId());
 			}
 
-			nft.setXAttr(stub, 0, null); //deactivate
-			nft.setXAttr(stub, 2, newIds[0] + "," + newIds[1]); // children
+			nft.setXAttr(stub, "activated", "false");
+			nft.setXAttr(stub, "children", newIds[0] + "," + newIds[1]);
 
 			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {
@@ -109,7 +109,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String id = args.get(0);
 
 			NFT nft = NFT.read(stub, id);
-			nft.setXAttr(stub, 0, null);
+			nft.setXAttr(stub, "activated", "false");
 
 			return newSuccessResponse("SUCCESS");
 		} catch (Throwable throwable) {

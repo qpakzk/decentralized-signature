@@ -10,13 +10,6 @@ public class Signature implements IType {
     private boolean activated;
     private String hash;
 
-    /*
-   attr       | index
-   ==================
-   activated  | 0
-   hash       | 4
-   */
-
     @Override
     public void assign(ArrayList<String> args) {
         this.activated = true;
@@ -30,19 +23,21 @@ public class Signature implements IType {
     }
 
     @Override
-    public void setXAttr(int index, String attr) {
-        if (index == 0) {
-            this.deactivate();
+    public void setXAttr(String index, String value) {
+        switch (index) {
+            case "activated":
+                this.deactivate();
+                break;
         }
     }
 
     @Override
-    public String getXAttr(int index) {
+    public String getXAttr(String index) {
         switch (index) {
-            case 0:
+            case "activated":
                 return Boolean.toString(this.activated);
 
-            case 4:
+            case "hash":
                 return this.hash;
         }
 
