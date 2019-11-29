@@ -70,23 +70,6 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 	}
 
 	public Response mint(ChaincodeStub stub, List<String> args) {
-		try {
-			if (args.size() != 2) {
-				throw new Throwable("FAILURE");
-			}
-
-			String id = args.get(0);
-			String type = "erc721";
-			String owner = args.get(1);
-
-			List<String> newArgs = new ArrayList<>();
-			newArgs.add(id);
-			newArgs.add(type);
-			newArgs.add(owner);
-
-			return this.baseNFT.mint(stub, newArgs);
-		} catch (Throwable throwable) {
-			return newErrorResponse("FAILURE");
-		}
+		return this.baseNFT.mint(stub, args);
 	}
 }

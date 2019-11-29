@@ -12,13 +12,13 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     @Override
     public Response mint(ChaincodeStub stub, List<String> args) {
         try {
-            if (args.size() != 3) {
+            if (args.size() != 2) {
                 throw new Throwable("FAILURE");
             }
 
             String id = args.get(0);
-            String type = args.get(1);
-            String owner = args.get(2);
+            String type = "base";
+            String owner = args.get(1);
 
             XAttr xattr = new XAttr();
             xattr.assign(type, new ArrayList<String>());
