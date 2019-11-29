@@ -25,12 +25,12 @@ public class DocNFT extends XNFT {
             String merkleroot = args.get(7);
 
             XAttr xattr = new XAttr();
-            ArrayList<String> list = new ArrayList<>();
-            list.add(pages);
-            list.add(hash);
-            list.add(signers);
+            ArrayList<String> params = new ArrayList<>();
+            params.add(pages);
+            params.add(hash);
+            params.add(signers);
 
-            xattr.assign(type, list);
+            xattr.assign(type, params);
 
             URI uri = new URI(path, merkleroot);
 

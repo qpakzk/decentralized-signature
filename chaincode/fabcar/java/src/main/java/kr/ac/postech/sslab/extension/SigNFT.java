@@ -23,10 +23,10 @@ public class SigNFT extends XNFT {
             String merkleroot = args.get(5);
 
             XAttr xattr = new XAttr();
-            ArrayList<String> list = new ArrayList<>();
-            list.add(hash);
+            ArrayList<String> params = new ArrayList<>();
+            params.add(hash);
 
-            xattr.assign(type, list);
+            xattr.assign(type, params);
 
             URI uri = new URI(path, merkleroot);
 
