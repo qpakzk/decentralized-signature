@@ -4,6 +4,7 @@ import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.type.URI;
+import kr.ac.postech.sslab.user.Address;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 
 import java.util.List;
@@ -20,9 +21,13 @@ public class XNFT extends BaseNFT implements IXNFT {
             String index = args.get(1);
             String value = args.get(2);
 
-            //Check Client Identity
-
             NFT nft = NFT.read(stub, id);
+
+            String caller = Address.getMyAddress(stub);
+            String owner = nft.getOwner();
+            if (!caller.equals(owner))
+                throw new Throwable();
+
 
             URI uri = nft.getURI();
             if (uri == null)
@@ -73,6 +78,11 @@ public class XNFT extends BaseNFT implements IXNFT {
 
             XAttr xattr = nft.getXAttr();
             if (xattr == null)
+                throw new Throwable();
+
+            String caller = Address.getMyAddress(stub);
+            String owner = nft.getOwner();
+            if (!caller.equals(owner))
                 throw new Throwable();
 
             nft.setXAttr(stub, index, value);

@@ -1,11 +1,9 @@
 package kr.ac.postech.sslab.standard;
 
-import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import kr.ac.postech.sslab.nft.NFT;
-import kr.ac.postech.sslab.type.URI;
+import kr.ac.postech.sslab.user.Address;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
@@ -20,7 +18,10 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String type = "base";
             String owner = args.get(1);
 
-            //Check Client Identity
+            String caller = Address.getMyAddress(stub);
+            if (!caller.equals(owner)) {
+                throw new Throwable();
+            }
 
             NFT nft = new NFT();
             nft.mint(stub, id, type, owner, null, null);
@@ -39,9 +40,14 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             String id = args.get(0);
 
-            //Check Client Identity
-
             NFT nft = NFT.read(stub, id);
+
+            String caller = Address.getMyAddress(stub);
+            String owner = nft.getOwner();
+            if (!caller.equals(owner)) {
+                throw new Throwable();
+            }
+
             nft.burn(stub, id);
 
             return newSuccessResponse("SUCCESS");
@@ -68,7 +74,6 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
         }
     }
 
-    //write
     @Override
     public Response setOwner(ChaincodeStub stub, List<String> args) {
         try {
@@ -82,11 +87,16 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
 
             NFT nft = NFT.read(stub, id);
 
-            if (!sender.equals(nft.getOwner())) {
-                throw new Throwable("FAILURE");
+            String owner = nft.getOwner();
+            if (!sender.equals(owner)) {
+                throw new Throwable();
             }
 
-            //Check Client Identity
+            String caller = Address.getMyAddress(stub);
+            String approvee = nft.getApprovee();
+            if ( !(caller.equals(owner) || caller.equals(approvee) || this.isOperatorForOwner(owner, caller)) ) {
+                throw new Throwable();
+            }
 
             nft.setOwner(stub, receiver);
 
@@ -96,7 +106,6 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
         }
     }
 
-    //read
     @Override
     public Response getOwner(ChaincodeStub stub, List<String> args) {
         try {
@@ -118,16 +127,14 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
     @Override
     public Response setOperatorForCaller(ChaincodeStub stub, List<String> args) {
         try {
-            //should be modified as 2 arguments
-            if (args.size() != 3) {
+            if (args.size() != 2) {
                 throw new Throwable("FAILURE");
             }
 
-            //caller should be deleted
-            String caller = args.get(0);
-            String operator = args.get(1);
-            boolean approved = Boolean.parseBoolean(args.get(2));
+            String operator = args.get(0);
+            boolean approved = Boolean.parseBoolean(args.get(1));
 
+            String caller = Address.getMyAddress(stub);
             if (operator.equals(caller)) {
                 throw new Throwable("FAILURE");
             }
@@ -135,7 +142,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             if (this.getOperatorsApproval() == null) {
                 throw new Throwable();
             }
-            //Check Client Identity
+
             this.setOperatorsApproval(stub, caller, operator, approved);
 
             return newSuccessResponse("SUCCESS");
@@ -172,9 +179,14 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String approvee = args.get(0);
             String id = args.get(1);
 
-            //Check Client Identity
-
             NFT nft = NFT.read(stub, id);
+
+            String caller = Address.getMyAddress(stub);
+            String owner = nft.getOwner();
+            if ( !(caller.equals(owner) || this.isOperatorForOwner(owner, caller)) ) {
+                throw new Throwable();
+            }
+
             nft.setApprovee(stub, approvee);
 
             return newSuccessResponse("SUCCESS");

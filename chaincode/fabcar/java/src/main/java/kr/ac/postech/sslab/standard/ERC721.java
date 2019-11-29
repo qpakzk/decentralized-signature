@@ -4,7 +4,6 @@ import kr.ac.postech.sslab.main.ConcreteChaincodeBase;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ERC721 extends ConcreteChaincodeBase implements IERC721 {

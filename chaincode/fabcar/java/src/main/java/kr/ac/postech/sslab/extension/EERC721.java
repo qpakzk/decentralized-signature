@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.type.URI;
+import kr.ac.postech.sslab.user.Address;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.io.IOException;
 import java.util.*;
@@ -72,6 +73,12 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			NFT nft = NFT.read(stub, id);
 
+			String caller = Address.getMyAddress(stub);
+			String owner = nft.getOwner();
+
+			if ( !(caller.equals(owner) || this.isOperatorForOwner(owner, caller)) )
+				throw new Throwable();
+
 			NFT[] child = new NFT[2];
 
 			for (int i = 0; i < 2; i++) {
@@ -109,6 +116,13 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			String id = args.get(0);
 
 			NFT nft = NFT.read(stub, id);
+
+			String caller = Address.getMyAddress(stub);
+			String owner = nft.getOwner();
+
+			if ( !(caller.equals(owner) || this.isOperatorForOwner(owner, caller)) )
+				throw new Throwable();
+
 			nft.setXAttr(stub, "activated", "false");
 
 			return newSuccessResponse("SUCCESS");

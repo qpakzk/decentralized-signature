@@ -3,6 +3,7 @@ package kr.ac.postech.sslab.extension;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.type.URI;
+import kr.ac.postech.sslab.user.Address;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,10 @@ public class SigNFT extends XNFT {
             String hash = args.get(3);
             String path = args.get(4);
             String merkleroot = args.get(5);
+
+            String caller = Address.getMyAddress(stub);
+            if (!caller.equals(owner))
+                throw new Throwable();
 
             XAttr xattr = new XAttr();
             ArrayList<String> params = new ArrayList<>();
