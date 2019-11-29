@@ -43,7 +43,7 @@ hs_err_pid*
 .classpath
 .settings
 
-main.iml
+*.iml
 
 build
 .gradle
