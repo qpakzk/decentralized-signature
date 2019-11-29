@@ -1,5 +1,6 @@
 package kr.ac.postech.sslab.extension;
 
+import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.standard.BaseNFT;
 import kr.ac.postech.sslab.type.URI;
@@ -23,13 +24,17 @@ public class XNFT extends BaseNFT implements IXNFT {
 
             NFT nft = NFT.read(stub, id);
 
+            URI uri = nft.getURI();
+            if (uri == null)
+                throw new Throwable();
+
             switch (index) {
                 case 0:
-                    nft.getURI().setPath(attribute);
+                    uri.setPath(attribute);
                     break;
 
                 case 1:
-                    nft.getURI().setHash(attribute);
+                    uri.setHash(attribute);
                     break;
             }
 
@@ -44,39 +49,29 @@ public class XNFT extends BaseNFT implements IXNFT {
     @Override
     public Response getURI(ChaincodeStub stub, List<String> args) {
         try {
-            switch (args.size()) {
-                case 1: {
-                    String id = args.get(0);
-                    NFT nft = NFT.read(stub, id);
-                    URI uri = nft.getURI();
-                    return newSuccessResponse(uri.toJSONString());
-                }
+            String id = args.get(0);
+            int index = Integer.parseInt(args.get(1));
+            NFT nft = NFT.read(stub, id);
 
-                case 2: {
-                    String id = args.get(0);
-                    int index = Integer.parseInt(args.get(1));
-                    NFT nft = NFT.read(stub, id);
+            URI uri = nft.getURI();
+            if (uri == null)
+                throw new Throwable();
 
-                    String attribute;
-                    switch (index) {
-                        case 0:
-                            attribute = nft.getURI().getPath();
-                            break;
+            String value;
+            switch (index) {
+                case 0:
+                    value = uri.getPath();
+                    break;
 
-                        case 1:
-                            attribute = nft.getURI().getHash();
-                            break;
-
-                        default:
-                            throw new Throwable("FAILURE");
-                    }
-
-                    return newSuccessResponse(attribute);
-                }
+                case 1:
+                    value = uri.getHash();
+                    break;
 
                 default:
-                    throw new Throwable("FAILURE");
+                    throw new Throwable();
             }
+
+            return newSuccessResponse(value);
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }
@@ -94,6 +89,11 @@ public class XNFT extends BaseNFT implements IXNFT {
             String attr  = args.get(2);
 
             NFT nft = NFT.read(stub, id);
+
+            XAttr xattr = nft.getXAttr();
+            if (xattr == null)
+                throw new Throwable();
+
             nft.setXAttr(stub, index, attr);
 
             return newSuccessResponse("SUCCESS");
@@ -114,7 +114,12 @@ public class XNFT extends BaseNFT implements IXNFT {
 
             NFT nft = NFT.read(stub, id);
 
-            return newSuccessResponse(nft.getXAttr(index));
+            XAttr xattr = nft.getXAttr();
+            if (xattr == null)
+                throw new Throwable();
+
+            String value = nft.getXAttr(index);
+            return newSuccessResponse(value);
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");
         }
