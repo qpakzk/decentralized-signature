@@ -1,11 +1,7 @@
 package kr.ac.postech.sslab.type;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,12 +21,15 @@ public class URI {
 
     public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = new HashMap<>();
+        return mapper.writeValueAsString(this.toMap());
+    }
 
+    public Map<String, String> toMap() {
+        Map<String, String> map = new HashMap<>();
         map.put("path", this.path);
         map.put("hash", this.hash);
 
-        return mapper.writeValueAsString(map);
+        return map;
     }
 
     public void setPath(String path) {
@@ -49,10 +48,8 @@ public class URI {
         return this.hash;
     }
 
-    public void assign(String jsonString) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(jsonString);
-        this.path = node.get("path").asText();
-        this.hash = node.get("hash").asText();
+    public void assign(Map<String, String> map) {
+        this.path = map.get("path");
+        this.hash = map.get("hash");
     }
 }

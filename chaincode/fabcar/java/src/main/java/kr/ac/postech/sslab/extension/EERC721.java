@@ -5,7 +5,6 @@ import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.nft.NFT;
 import kr.ac.postech.sslab.type.URI;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-
 import java.io.IOException;
 import java.util.*;
 import kr.ac.postech.sslab.standard.*;
@@ -78,13 +77,13 @@ public class EERC721 extends ERC721 implements IEERC721 {
 			for (int i = 0; i < 2; i++) {
 				child[i] = new NFT();
 
-				String xattrJsonString = nft.getXAttr().toJSONString();
+				Map<String, Object> xattrMap = nft.getXAttr().toMap();
 				XAttr xattr = new XAttr();
-				xattr.assign(nft.getType(), xattrJsonString);
+				xattr.assign(nft.getType(), xattrMap);
 
-				String uriJsonString = nft.getURI().toJSONString();
+				Map<String, String> uriMap = nft.getURI().toMap();
 				URI uri = new URI();
-				uri.assign(uriJsonString);
+				uri.assign(uriMap);
 
 				child[i].mint(stub, newIds[i], nft.getType(), nft.getOwner(), xattr, uri);
 				child[i].setXAttr(stub, index, values[i]); // division point

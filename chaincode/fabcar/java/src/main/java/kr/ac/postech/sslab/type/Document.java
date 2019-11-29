@@ -1,13 +1,11 @@
 package kr.ac.postech.sslab.type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Document implements IType {
     private boolean activated;
@@ -43,25 +41,14 @@ public class Document implements IType {
     }
 
     @Override
-    public void assign(String jsonString) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(jsonString);
-
-        this.activated = node.get("activated").asBoolean();
-        this.parent = node.get("parent").asText();
-
-        String childrenJsonArray = node.get("children").asText();
-        TypeReference typeArrayList = new TypeReference<ArrayList<String>>() {};
-        this.children = mapper.readValue(childrenJsonArray, typeArrayList);
-
-        this.pages = node.get("pages").asInt();
-        this.hash = node.get("hash").asText();
-
-        String signersJsonArray = node.get("signers").asText();
-        this.signers = mapper.readValue(signersJsonArray, typeArrayList);
-
-        String sigIdsJsonArray = node.get("sigIds").asText();
-        this.sigIds = mapper.readValue(sigIdsJsonArray, typeArrayList);
+    public void assign(Map<String, Object> map) {
+        this.activated = (boolean) map.get("activated");
+        this.parent = (String) map.get("parent");
+        this.children = (ArrayList<String>) map.get("children");
+        this.pages = (int) map.get("pages");
+        this.hash = (String) map.get("hash");
+        this.signers = (ArrayList<String>) map.get("signers");
+        this.sigIds = (ArrayList<String>) map.get("sigIds");
     }
 
     @Override
@@ -125,17 +112,21 @@ public class Document implements IType {
     @Override
     public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this.toMap());
+    }
 
-        HashMap<String, String> map = new HashMap<>();
-        map.put("activated", Boolean.toString(this.activated));
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("activated", this.activated);
         map.put("parent", this.parent);
-        map.put("children", mapper.writeValueAsString(this.children));
-        map.put("pages", Integer.toString(this.pages));
+        map.put("children", this.children);
+        map.put("pages", this.pages);
         map.put("hash", this.hash);
-        map.put("signers", mapper.writeValueAsString(this.signers));
-        map.put("sigIds", mapper.writeValueAsString(this.sigIds));
+        map.put("signers", this.signers);
+        map.put("sigIds", this.sigIds);
 
-        return mapper.writeValueAsString(map);
+        return map;
     }
 
     private void deactivate() {

@@ -1,7 +1,7 @@
 package kr.ac.postech.sslab.nft;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.postech.sslab.adapter.XAttr;
 import kr.ac.postech.sslab.type.URI;
@@ -43,20 +43,22 @@ public class NFT {
 
     public static NFT read(ChaincodeStub stub, String id) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        String jsonString = stub.getStringState(id);
-        JsonNode node = mapper.readTree(jsonString);
+        String json = stub.getStringState(id);
 
-        String type = node.get("type").asText();
-        String owner = node.get("owner").asText();
-        String approvee = node.get("approvee").asText();
+        Map<String, Object> map =
+                mapper.readValue(json, new TypeReference<HashMap<String, Object>>(){});
 
+        String type = (String) map.get("type");
+        String owner = (String) map.get("owner");
+        String approvee = (String) map.get("approvee");
+
+        Map<String, Object> xattrMap = (HashMap<String, Object>) map.get("xattr");
         XAttr xattr = new XAttr();
-        JsonNode xattrNode = node.get("xattr");
-        xattr.assign(type, xattrNode.asText());
+        xattr.assign(type, xattrMap);
 
+        Map<String, String> uriMap = (HashMap<String, String>) map.get("uri");
         URI uri = new URI();
-        JsonNode uriNode = node.get("uri");
-        uri.assign(uriNode.asText());
+        uri.assign(uriMap);
 
         return new NFT(id, type, owner, approvee, xattr, uri);
     }
@@ -112,17 +114,20 @@ public class NFT {
         return this.uri;
     }
 
-    private String toJSONString() throws JsonProcessingException {
+    public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = new HashMap<>();
+        return mapper.writeValueAsString(this.toMap());
+    }
 
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
         map.put("id", this.id);
         map.put("type", this.type);
         map.put("owner", this.owner);
         map.put("approvee", this.approvee);
-        map.put("xattr", this.xattr.toJSONString());
-        map.put("uri", this.uri.toJSONString());
+        map.put("xattr", this.xattr.toMap());
+        map.put("uri", this.uri.toMap());
 
-        return mapper.writeValueAsString(map);
+        return map;
     }
 }

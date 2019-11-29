@@ -1,6 +1,7 @@
 package kr.ac.postech.sslab.type;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Base implements IType {
     @Override
@@ -8,7 +9,7 @@ public class Base implements IType {
     }
 
     @Override
-    public void assign(String jsonString) {
+    public void assign(Map<String, Object> map) {
 
     }
 
@@ -25,5 +26,10 @@ public class Base implements IType {
     @Override
     public String toJSONString() {
         return "";
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return null;
     }
 }

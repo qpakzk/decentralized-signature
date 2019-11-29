@@ -1,11 +1,10 @@
 package kr.ac.postech.sslab.type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Signature implements IType {
     private boolean activated;
@@ -25,11 +24,9 @@ public class Signature implements IType {
     }
 
     @Override
-    public void assign(String jsonString) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(jsonString);
-        this.activated = node.get("activated").asBoolean();
-        this.hash = node.get("hash").asText();
+    public void assign(Map<String, Object> map) {
+        this.activated = (boolean) map.get("activated");
+        this.hash = (String) map.get("hash");
     }
 
     @Override
@@ -55,12 +52,16 @@ public class Signature implements IType {
     @Override
     public String toJSONString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, String> map = new HashMap<>();
+        return mapper.writeValueAsString(this.toMap());
+    }
 
-        map.put("activated", Boolean.toString(this.activated));
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("activated", this.activated);
         map.put("hash", this.hash);
 
-        return mapper.writeValueAsString(map);
+        return map;
     }
 
     private void deactivate() {
