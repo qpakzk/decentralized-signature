@@ -1,7 +1,6 @@
 package kr.ac.postech.sslab.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import kr.ac.postech.sslab.type.Base;
 import kr.ac.postech.sslab.type.IType;
 import kr.ac.postech.sslab.type.Document;
 import kr.ac.postech.sslab.type.Signature;
@@ -13,11 +12,6 @@ public class XAttrAdapter implements IXAttr {
 
     XAttrAdapter(String type) {
         switch (type) {
-            case "base":
-            case "erc721":
-                this.xattr = new Base();
-                break;
-
             case "doc":
                 this.xattr = new Document();
                 break;
