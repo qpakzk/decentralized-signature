@@ -20,15 +20,10 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             String type = "base";
             String owner = args.get(1);
 
-            XAttr xattr = new XAttr();
-            xattr.assign(type, new ArrayList<String>());
-
-            URI uri = new URI();
-
             //Check Client Identity
 
             NFT nft = new NFT();
-            nft.mint(stub, id, type, owner, xattr, uri);
+            nft.mint(stub, id, type, owner, null, null);
             return newSuccessResponse("SUCCESS");
         } catch (Throwable throwable) {
             return newErrorResponse("FAILURE");

@@ -52,13 +52,19 @@ public class NFT {
         String owner = (String) map.get("owner");
         String approvee = (String) map.get("approvee");
 
-        Map<String, Object> xattrMap = (HashMap<String, Object>) map.get("xattr");
-        XAttr xattr = new XAttr();
-        xattr.assign(type, xattrMap);
+        XAttr xattr = null;
+        if (map.containsKey("xattr")) {
+            Map<String, Object> xattrMap = (HashMap<String, Object>) map.get("xattr");
+            xattr = new XAttr();
+            xattr.assign(type, xattrMap);
+        }
 
-        Map<String, String> uriMap = (HashMap<String, String>) map.get("uri");
-        URI uri = new URI();
-        uri.assign(uriMap);
+        URI uri = null;
+        if (map.containsKey("uri")) {
+            Map<String, String> uriMap = (HashMap<String, String>) map.get("uri");
+            uri = new URI();
+            uri.assign(uriMap);
+        }
 
         return new NFT(id, type, owner, approvee, xattr, uri);
     }
@@ -125,8 +131,14 @@ public class NFT {
         map.put("type", this.type);
         map.put("owner", this.owner);
         map.put("approvee", this.approvee);
-        map.put("xattr", this.xattr.toMap());
-        map.put("uri", this.uri.toMap());
+
+        if (this.xattr != null) {
+            map.put("xattr", this.xattr.toMap());
+        }
+
+        if (this.uri != null) {
+            map.put("uri", this.uri.toMap());
+        }
 
         return map;
     }
