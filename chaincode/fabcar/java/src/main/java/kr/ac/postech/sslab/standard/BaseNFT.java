@@ -16,9 +16,9 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
-            String type = args.get(1).toLowerCase();
-            String owner = args.get(2).toLowerCase();
+            String id = args.get(0);
+            String type = args.get(1);
+            String owner = args.get(2);
 
             XAttr xattr = new XAttr();
             xattr.assign(type, new ArrayList<String>());
@@ -42,7 +42,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
+            String id = args.get(0);
 
             //Check Client Identity
 
@@ -62,7 +62,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
+            String id = args.get(0);
 
             NFT nft = NFT.read(stub, id);
             String type = nft.getType();
@@ -81,9 +81,9 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String sender = args.get(0).toLowerCase();
-            String receiver = args.get(1).toLowerCase();
-            String id = args.get(2).toLowerCase();
+            String sender = args.get(0);
+            String receiver = args.get(1);
+            String id = args.get(2);
 
             NFT nft = NFT.read(stub, id);
 
@@ -109,7 +109,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
+            String id = args.get(0);
 
             NFT nft = NFT.read(stub, id);
             String owner = nft.getOwner();
@@ -129,8 +129,8 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
             }
 
             //caller should be deleted
-            String caller = args.get(0).toLowerCase();
-            String operator = args.get(1).toLowerCase();
+            String caller = args.get(0);
+            String operator = args.get(1);
             boolean approved = Boolean.parseBoolean(args.get(2));
 
             if (operator.equals(caller)) {
@@ -156,8 +156,8 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String owner = args.get(0).toLowerCase();
-            String operator = args.get(1).toLowerCase();
+            String owner = args.get(0);
+            String operator = args.get(1);
 
             boolean approved = this.isOperatorForOwner(owner, operator);
 
@@ -174,8 +174,8 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String approvee = args.get(0).toLowerCase();
-            String id = args.get(1).toLowerCase();
+            String approvee = args.get(0);
+            String id = args.get(1);
 
             //Check Client Identity
 
@@ -195,7 +195,7 @@ public class BaseNFT extends ConcreteChaincodeBase implements IBaseNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
+            String id = args.get(0);
 
             NFT nft = NFT.read(stub, id);
             String approvee = nft.getApprovee();

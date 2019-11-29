@@ -15,12 +15,12 @@ public class SigNFT extends XNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
-            String type = args.get(1).toLowerCase();
-            String owner = args.get(2).toLowerCase();
-            String hash = args.get(3).toLowerCase();
-            String path = args.get(4).toLowerCase();
-            String merkleroot = args.get(5).toLowerCase();
+            String id = args.get(0);
+            String type = args.get(1);
+            String owner = args.get(2);
+            String hash = args.get(3);
+            String path = args.get(4);
+            String merkleroot = args.get(5);
 
             XAttr xattr = new XAttr();
             ArrayList<String> list = new ArrayList<>();

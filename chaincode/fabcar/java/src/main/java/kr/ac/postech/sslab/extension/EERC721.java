@@ -24,8 +24,8 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String owner = args.get(0).toLowerCase();
-			String type = args.get(1).toLowerCase();
+			String owner = args.get(0);
+			String type = args.get(1);
 
 			long ownedTokensCount = this.getBalance(stub, owner, type);
 
@@ -59,7 +59,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String id = args.get(0).toLowerCase();
+			String id = args.get(0);
 			String[] newIds = args.get(1)
 					.replace("[", "").replace("]", "").split(", ");
 			String[] values = args.get(2)
@@ -106,7 +106,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String id = args.get(0).toLowerCase();
+			String id = args.get(0);
 
 			NFT nft = NFT.read(stub, id);
 			nft.setXAttr(stub, 0, null);
@@ -124,7 +124,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String id = args.get(0).toLowerCase();
+			String id = args.get(0);
 
 			NFT nft = NFT.read(stub, id);
 
@@ -151,7 +151,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String id = args.get(0).toLowerCase();
+			String id = args.get(0);
 
 			List<String> histories = new LinkedList<>();
 			QueryResultsIterator<KeyModification> resultsIterator = stub.getHistoryForKey(id);

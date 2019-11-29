@@ -17,7 +17,7 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String owner = args.get(0).toLowerCase();
+			String owner = args.get(0);
 			long ownedTokensCount = this.getBalance(stub, owner);
 
 			return newSuccessResponse(Long.toString(ownedTokensCount));
@@ -75,9 +75,9 @@ public class ERC721 extends ConcreteChaincodeBase implements IERC721 {
 				throw new Throwable("FAILURE");
 			}
 
-			String id = args.get(0).toLowerCase();
+			String id = args.get(0);
 			String type = "erc721";
-			String owner = args.get(1).toLowerCase();
+			String owner = args.get(1);
 
 			List<String> newArgs = new ArrayList<>();
 			newArgs.add(id);

@@ -15,14 +15,14 @@ public class DocNFT extends XNFT {
                 throw new Throwable("FAILURE");
             }
 
-            String id = args.get(0).toLowerCase();
-            String type = args.get(1).toLowerCase();
-            String owner = args.get(2).toLowerCase();
-            String pages = args.get(3).toLowerCase();
-            String hash = args.get(4).toLowerCase();
-            String signers = args.get(5).toLowerCase();
-            String path = args.get(6).toLowerCase();
-            String merkleroot = args.get(7).toLowerCase();
+            String id = args.get(0);
+            String type = args.get(1);
+            String owner = args.get(2);
+            String pages = args.get(3);
+            String hash = args.get(4);
+            String signers = args.get(5);
+            String path = args.get(6);
+            String merkleroot = args.get(7);
 
             XAttr xattr = new XAttr();
             ArrayList<String> list = new ArrayList<>();
