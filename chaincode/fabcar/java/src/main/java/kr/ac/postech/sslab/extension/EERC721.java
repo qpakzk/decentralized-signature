@@ -142,16 +142,7 @@ public class EERC721 extends ERC721 implements IEERC721 {
 
 			NFT nft = NFT.read(stub, id);
 
-			ObjectMapper mapper = new ObjectMapper();
-			Map<String, String> map = new HashMap<>();
-			map.put("id", nft.getId());
-			map.put("type", nft.getType());
-			map.put("owner", nft.getOwner());
-			map.put("approvee", nft.getApprovee());
-			map.put("xattr", nft.getXAttr().toJSONString());
-			map.put("uri", nft.getURI().toJSONString());
-
-			String query = mapper.writeValueAsString(map);
+			String query = nft.toJSONString();
 			return newSuccessResponse(query);
 		} catch (Throwable throwable) {
 			return newErrorResponse("FAILURE");
